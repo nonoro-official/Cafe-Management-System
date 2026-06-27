@@ -1,0 +1,25 @@
+{
+  "name": "cafe-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MERN Stack Cafe Management System monorepo",
+  "scripts": {
+    "dev:customer": "npm run dev --prefix customer",
+    "dev:admin": "npm run dev --prefix admin",
+    "dev:server": "npm run dev --prefix server",
+    "build:customer": "npm run build --prefix customer",
+    "build:admin": "npm run build --prefix admin",
+    "lint:customer": "npm run lint --prefix customer",
+    "lint:admin": "npm run lint --prefix admin",
+    "lint:server": "npm run lint --prefix server",
+    "install:all": "npm install --prefix customer && npm install --prefix admin && npm install --prefix server"
+  },
+  "keywords": [
+    "mern",
+    "cafe",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "license": "MIT"
+}
