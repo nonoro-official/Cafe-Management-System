@@ -96,3 +96,85 @@ body {
     transform: scale(1);
   }
 }
+
+.kiosk-shell {
+  min-height: 100vh;
+  background: #ffffff;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kiosk-start {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.kiosk-start__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(2rem, 5vh, 3rem) 1.5rem 1.5rem;
+}
+
+.kiosk-start__logo {
+  width: clamp(4.5rem, 12vw, 5.5rem);
+  height: clamp(4.5rem, 12vw, 5.5rem);
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.kiosk-start__name {
+  margin: 1rem 0 0;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  color: #374151;
+}
+
+.kiosk-start__banner {
+  flex: 1;
+  margin: 0.75rem 1.5rem 1rem;
+  min-height: 14rem;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 500;
+}
+
+.kiosk-start__cta {
+  width: 100%;
+  margin-top: auto;
+  border: none;
+  padding: clamp(2rem, 6vh, 2.75rem) 1.5rem;
+  background: #c4c4c4;
+  color: #1f2937;
+  font: inherit;
+  font-size: clamp(1.35rem, 3.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.kiosk-start__cta:hover {
+  background: #b8b8b8;
+}
+
+.kiosk-start__cta:active {
+  background: #a8a8a8;
+  transform: scale(0.998);
+}
+
+.kiosk-start__cta:focus-visible {
+  outline: 3px solid #92400e;
+  outline-offset: -3px;
+}
