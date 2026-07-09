@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import KioskBrand from '../components/kiosk/KioskBrand.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
-import { APP_NAME, CAFE_NAME } from '../utilities/constants.js';
+import { APP_NAME } from '../utilities/constants.js';
 
 const KioskStart = () => {
   const navigate = useNavigate();
@@ -13,12 +14,7 @@ const KioskStart = () => {
 
   return (
     <div className="kiosk-start">
-      <header className="kiosk-start__brand">
-        <div className="kiosk-start__logo" aria-hidden="true">
-          Logo
-        </div>
-        <p className="kiosk-start__name">{CAFE_NAME}</p>
-      </header>
+      <KioskBrand />
 
       <div className="kiosk-start__banner" aria-hidden="true">
         Banner

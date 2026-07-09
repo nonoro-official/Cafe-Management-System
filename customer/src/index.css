@@ -111,14 +111,14 @@ body {
   background: #ffffff;
 }
 
-.kiosk-start__brand {
+.kiosk-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: clamp(2rem, 5vh, 3rem) 1.5rem 1.5rem;
 }
 
-.kiosk-start__logo {
+.kiosk-brand__logo {
   width: clamp(4.5rem, 12vw, 5.5rem);
   height: clamp(4.5rem, 12vw, 5.5rem);
   border-radius: 50%;
@@ -131,7 +131,7 @@ body {
   font-weight: 500;
 }
 
-.kiosk-start__name {
+.kiosk-brand__name {
   margin: 1rem 0 0;
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   color: #374151;
@@ -177,4 +177,82 @@ body {
 .kiosk-start__cta:focus-visible {
   outline: 3px solid #92400e;
   outline-offset: -3px;
+}
+
+.kiosk-home {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.kiosk-home__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.5rem 6rem;
+}
+
+.kiosk-home__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1rem);
+  width: min(100%, 22rem);
+}
+
+.kiosk-home__option {
+  min-height: clamp(12rem, 34vh, 17rem);
+  border: none;
+  font: inherit;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.kiosk-home__option--dine-in {
+  background: #c4c4c4;
+}
+
+.kiosk-home__option--dine-in:hover {
+  background: #b8b8b8;
+}
+
+.kiosk-home__option--dine-in:active {
+  background: #a8a8a8;
+  transform: scale(0.99);
+}
+
+.kiosk-home__option--take-out {
+  background: #e5e7eb;
+}
+
+.kiosk-home__option--take-out:hover {
+  background: #d1d5db;
+}
+
+.kiosk-home__option--take-out:active {
+  background: #c4c4c4;
+  transform: scale(0.99);
+}
+
+.kiosk-home__option:focus-visible {
+  outline: 3px solid #92400e;
+  outline-offset: 2px;
+}
+
+.kiosk-home__arc {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 130%;
+  height: clamp(7rem, 18vh, 11rem);
+  background: #e5e7eb;
+  border-radius: 50% 50% 0 0;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
