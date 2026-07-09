@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import KioskCartItemRow from '../components/kiosk/KioskCartItemRow.jsx';
+import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
 import { getMenuItemById } from '../data/kioskMenu.js';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
@@ -52,9 +53,13 @@ const KioskCart = () => {
   }
 
   return (
-    <div className="kiosk-cart">
+    <div className="kiosk-cart kiosk-page">
       <header className="kiosk-cart__header">
-        <h1 className="kiosk-cart__title">Your Orders</h1>
+        <KioskPageHeader
+          eyebrow="Review"
+          title="Your Order"
+          subtitle={`${cartCount} item${cartCount === 1 ? '' : 's'} in your cart`}
+        />
       </header>
 
       <div className="kiosk-cart__list-wrap">
@@ -75,18 +80,14 @@ const KioskCart = () => {
       <footer className="kiosk-cart__footer">
         <div className="kiosk-cart__total">
           <span>Total</span>
-          <span>${cartTotal.toFixed(2)}</span>
+          <span className="kiosk-cart__total-amount">${cartTotal.toFixed(2)}</span>
         </div>
 
         <div className="kiosk-cart__actions">
-          <button type="button" className="kiosk-cart__back" onClick={handleBack}>
+          <button type="button" className="kiosk-btn-secondary" onClick={handleBack}>
             Back
           </button>
-          <button
-            type="button"
-            className="kiosk-cart__proceed"
-            onClick={handleProceedToPayment}
-          >
+          <button type="button" className="kiosk-btn-primary" onClick={handleProceedToPayment}>
             Proceed to payment
           </button>
         </div>

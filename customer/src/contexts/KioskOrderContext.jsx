@@ -48,6 +48,15 @@ export const KioskOrderProvider = ({ children }) => {
     return nextNumber;
   }, []);
 
+  const resetOrder = useCallback(() => {
+    setCart({});
+    setPaymentMethod(null);
+    setCashlessProvider(null);
+    setOrderNumber(null);
+    setTicketNumber(null);
+    setActiveCategoryId(kioskCategories[0]?.id ?? '');
+  }, []);
+
   const cartCount = useMemo(
     () => Object.values(cart).reduce((total, quantity) => total + quantity, 0),
     [cart],
@@ -68,6 +77,7 @@ export const KioskOrderProvider = ({ children }) => {
       ticketNumber,
       assignOrderNumber,
       assignTicketNumber,
+      resetOrder,
       addToCart,
       removeFromCart,
     }),
@@ -82,6 +92,7 @@ export const KioskOrderProvider = ({ children }) => {
       ticketNumber,
       assignOrderNumber,
       assignTicketNumber,
+      resetOrder,
       addToCart,
       removeFromCart,
     ],

@@ -7,7 +7,7 @@ import { APP_NAME } from '../utilities/constants.js';
 
 const KioskOrderNumber = () => {
   const navigate = useNavigate();
-  const { cartCount, paymentMethod, cashlessProvider, orderNumber } = useKioskOrder();
+  const { cartCount, paymentMethod, cashlessProvider, orderNumber, resetOrder } = useKioskOrder();
 
   useDocumentTitle(`${APP_NAME} | Order Received`);
 
@@ -22,17 +22,27 @@ const KioskOrderNumber = () => {
     }
   }, [cartCount, paymentMethod, cashlessProvider, orderNumber, navigate]);
 
+  const handleNewOrder = () => {
+    resetOrder();
+    navigate('/kiosk/start');
+  };
+
   if (cartCount === 0 || paymentMethod !== 'cashless' || !cashlessProvider || !orderNumber) {
     return null;
   }
 
   return (
-    <div className="kiosk-confirmation">
-      <KioskNumberDisplay label="Order" number={orderNumber} />
-
-      <p className="kiosk-confirmation__message">
-        Your order has been received. Please watch the counter monitor for your number.
-      </p>
+    <div className="kiosk-confirmation kiosk-page">
+      <div className="kiosk-confirmation__panel">
+        <p className="kiosk-confirmation__status">Order received</p>
+        <KioskNumberDisplay label="Order" number={orderNumber} />
+        <p className="kiosk-confirmation__message">
+          Your order has been received. Please watch the counter monitor for your number.
+        </p>
+        <button type="button" className="kiosk-btn-primary kiosk-confirmation__action" onClick={handleNewOrder}>
+          Start new order
+        </button>
+      </div>
     </div>
   );
 };

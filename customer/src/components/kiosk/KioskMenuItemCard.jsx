@@ -16,6 +16,12 @@ const KioskMenuItemCard = ({ item, quantity = 0, onAdd, onRemove }) => {
             <span className="kiosk-dashboard__item-placeholder">{item.name}</span>
           )}
         </div>
+        <div className="kiosk-dashboard__item-meta">
+          <span className="kiosk-dashboard__item-name">{item.name}</span>
+          {item.price != null && (
+            <span className="kiosk-dashboard__item-price">${item.price.toFixed(2)}</span>
+          )}
+        </div>
       </button>
 
       {hasQuantity && (

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
 import { kioskCashlessPaymentMethods } from '../data/kioskPaymentMethods.js';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
@@ -33,9 +34,13 @@ const KioskCashlessPayment = () => {
   }
 
   return (
-    <div className="kiosk-cashless">
-      <div className="kiosk-cashless__content">
-        <h1 className="kiosk-cashless__title">Choose your Cashless Payment</h1>
+    <div className="kiosk-cashless kiosk-page">
+      <div className="kiosk-cashless__panel">
+        <KioskPageHeader
+          eyebrow="Cashless"
+          title="Choose your payment"
+          subtitle="Tap your preferred e-wallet or card"
+        />
 
         <div className="kiosk-cashless__grid" role="group" aria-label="Cashless payment methods">
           {kioskCashlessPaymentMethods.map((method) => (
@@ -51,6 +56,7 @@ const KioskCashlessPayment = () => {
               ) : (
                 <span className="kiosk-cashless__method-placeholder" aria-hidden="true" />
               )}
+              <span className="kiosk-cashless__method-label">{method.label}</span>
             </button>
           ))}
         </div>
