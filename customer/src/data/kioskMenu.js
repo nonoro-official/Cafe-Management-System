@@ -35,3 +35,6 @@ export const kioskMenuItems = [
 
 export const getMenuItemsByCategory = (categoryId) =>
   kioskMenuItems.filter((item) => item.categoryId === categoryId);
+
+export const getMenuItemById = (itemId) =>
+  kioskMenuItems.find((item) => item.id === itemId);

@@ -26,7 +26,7 @@ const KioskDashboard = () => {
       return;
     }
 
-    navigate('/kiosk/checkout');
+    navigate('/kiosk/cart');
   };
 
   return (

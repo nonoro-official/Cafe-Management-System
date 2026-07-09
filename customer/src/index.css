@@ -440,3 +440,240 @@ body {
   outline: 3px solid #92400e;
   outline-offset: 2px;
 }
+
+.kiosk-cart {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.kiosk-cart__header {
+  padding: 1.5rem 1rem 1rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.kiosk-cart__title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 500;
+  color: #374151;
+}
+
+.kiosk-cart__list-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 1rem;
+}
+
+.kiosk-cart__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kiosk-cart__list > li + li {
+  border-top: 1px solid #e5e7eb;
+}
+
+.kiosk-cart__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1rem 0;
+}
+
+.kiosk-cart__item-media {
+  width: clamp(4rem, 14vw, 5rem);
+  height: clamp(4rem, 14vw, 5rem);
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.kiosk-cart__item-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #e5e7eb;
+}
+
+.kiosk-cart__item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kiosk-cart__item-details {
+  min-width: 0;
+}
+
+.kiosk-cart__item-name {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-weight: 500;
+  color: #374151;
+}
+
+.kiosk-cart__item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.kiosk-cart__item-control {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #374151;
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.kiosk-cart__item-control:focus-visible {
+  outline: 3px solid #92400e;
+  outline-offset: 2px;
+}
+
+.kiosk-cart__item-quantity {
+  min-width: 1.25rem;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.kiosk-cart__item-price {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.kiosk-cart__footer {
+  padding: 1rem;
+  border-top: 1px solid #d1d5db;
+}
+
+.kiosk-cart__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 600;
+  color: #374151;
+}
+
+.kiosk-cart__actions {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.45fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.kiosk-cart__back,
+.kiosk-cart__proceed {
+  border: none;
+  padding: 0.9rem 1rem;
+  background: #c4c4c4;
+  color: #1f2937;
+  font: inherit;
+  font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.kiosk-cart__proceed {
+  text-align: center;
+}
+
+.kiosk-cart__back:hover,
+.kiosk-cart__proceed:hover {
+  background: #b8b8b8;
+}
+
+.kiosk-cart__back:active,
+.kiosk-cart__proceed:active {
+  background: #a8a8a8;
+}
+
+.kiosk-cart__back:focus-visible,
+.kiosk-cart__proceed:focus-visible {
+  outline: 3px solid #92400e;
+  outline-offset: 2px;
+}
+
+.kiosk-checkout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: #ffffff;
+}
+
+.kiosk-checkout__content {
+  width: min(100%, 22rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.kiosk-checkout__title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+  font-weight: 500;
+  color: #374151;
+}
+
+.kiosk-checkout__options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kiosk-checkout__option {
+  width: 100%;
+  min-height: clamp(4.5rem, 14vh, 5.5rem);
+  border: none;
+  padding: 1.25rem 1.5rem;
+  background: #c4c4c4;
+  color: #1f2937;
+  font: inherit;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.kiosk-checkout__option:hover {
+  background: #b8b8b8;
+}
+
+.kiosk-checkout__option:active {
+  background: #a8a8a8;
+  transform: scale(0.99);
+}
+
+.kiosk-checkout__option:focus-visible {
+  outline: 3px solid #92400e;
+  outline-offset: 2px;
+}

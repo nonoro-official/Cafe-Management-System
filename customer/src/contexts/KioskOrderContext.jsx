@@ -8,6 +8,7 @@ export const KioskOrderProvider = ({ children }) => {
   const location = useLocation();
   const [activeCategoryId, setActiveCategoryId] = useState(kioskCategories[0]?.id ?? '');
   const [cart, setCart] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState(null);
 
   const orderType = location.state?.orderType ?? null;
 
@@ -43,10 +44,12 @@ export const KioskOrderProvider = ({ children }) => {
       setActiveCategoryId,
       cart,
       cartCount,
+      paymentMethod,
+      setPaymentMethod,
       addToCart,
       removeFromCart,
     }),
-    [orderType, activeCategoryId, cart, cartCount, addToCart, removeFromCart],
+    [orderType, activeCategoryId, cart, cartCount, paymentMethod, addToCart, removeFromCart],
   );
 
   return <KioskOrderContext.Provider value={value}>{children}</KioskOrderContext.Provider>;
