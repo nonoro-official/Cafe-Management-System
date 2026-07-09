@@ -1,5 +1,45 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import KioskNumberDisplay from '../components/kiosk/KioskNumberDisplay.jsx';
+import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
+import { APP_NAME } from '../utilities/constants.js';
+
 const KioskTicketNumber = () => {
-  return null;
+  const navigate = useNavigate();
+  const { cartCount, paymentMethod, ticketNumber, assignTicketNumber } = useKioskOrder();
+
+  useDocumentTitle(`${APP_NAME} | Ticket`);
+
+  useEffect(() => {
+    if (cartCount === 0) {
+      navigate('/kiosk/dashboard', { replace: true });
+      return;
+    }
+
+    if (paymentMethod !== 'cash') {
+      navigate('/kiosk/checkout', { replace: true });
+      return;
+    }
+
+    if (!ticketNumber) {
+      assignTicketNumber();
+    }
+  }, [cartCount, paymentMethod, ticketNumber, assignTicketNumber, navigate]);
+
+  if (cartCount === 0 || paymentMethod !== 'cash' || !ticketNumber) {
+    return null;
+  }
+
+  return (
+    <div className="kiosk-confirmation">
+      <KioskNumberDisplay label="Ticket" number={ticketNumber} />
+
+      <p className="kiosk-confirmation__message">
+        Please provide your ticket at the checkout counter to place in your order
+      </p>
+    </div>
+  );
 };
 
 export default KioskTicketNumber;

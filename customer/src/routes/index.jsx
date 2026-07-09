@@ -7,6 +7,7 @@ import KioskCart from '../pages/Kiosk-Cart.jsx';
 import KioskCheckout from '../pages/Kiosk-Checkout.jsx';
 import KioskDashboard from '../pages/Kiosk-Dashboard.jsx';
 import KioskHome from '../pages/Kiosk-Home.jsx';
+import KioskOrderNumber from '../pages/Kiosk-Order-Number.jsx';
 import KioskStart from '../pages/Kiosk-Start.jsx';
 import KioskTicketNumber from '../pages/Kiosk-Ticket-Number.jsx';
 
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: 'ticket-number',
         element: <KioskTicketNumber />,
+      },
+      {
+        path: 'order-number',
+        element: <KioskOrderNumber />,
       },
     ],
   },
