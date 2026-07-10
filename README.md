@@ -168,19 +168,32 @@ npm run lint:server
 
 ## API Endpoints
 
-| Method | Route | Description |
+The server exposes a complete REST API. Highlights:
+
+| Group | Base Route | Access |
 | --- | --- | --- |
-| `GET` | `/` | API welcome message |
-| `GET` | `/api/health` | Service health check |
+| Auth | `/api/auth` | Public / Auth |
+| Users | `/api/users` | Admin |
+| Categories | `/api/categories` | Public read / Admin write |
+| Products | `/api/products` | Public read / Admin write |
+| Cart | `/api/cart` | Customer |
+| Orders | `/api/orders` | Customer & Admin |
+| Receipts | `/api/receipts` | Auth (PDF download) |
+| Reports | `/api/reports` | Admin |
+| Health | `/api/health` | Public |
 
-## Next Steps
+See [`server/README.md`](./server/README.md) for the full endpoint reference,
+authentication details, and the ordering workflow.
 
-This repository contains scaffolding only. Upcoming implementation work includes:
+## Seed Data
 
-- Customer menu browsing, cart, and checkout flows
-- Admin menu, order, staff, and analytics modules
-- Authentication, authorization, and domain models
-- Validation, testing, and deployment configuration
+```bash
+cd server
+npm run seed
+```
+
+Creates a bootstrap admin (`admin@cafe.test` / `Admin123!`), a sample customer,
+and a starter menu. Override credentials via `SEED_ADMIN_*` in `server/.env`.
 
 ## License
 
