@@ -1,14 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import { APP_NAME } from '../utilities/constants.js';
+import Sidebar from '../components/admin/Sidebar.jsx';
 
 const MainLayout = () => {
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <p className="app-eyebrow">Admin Dashboard</p>
-        <h1>{APP_NAME}</h1>
-      </header>
-      <main className="app-main">
+    <div className="admin-shell">
+      <Sidebar />
+      <main className="admin-main">
         <Outlet />
       </main>
     </div>
