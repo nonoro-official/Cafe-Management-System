@@ -6,6 +6,7 @@ import StatusBadge from '../components/admin/StatusBadge.jsx';
 import KpiCard from '../components/admin/KpiCard.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
+import { formatCurrency } from '../utilities/currency.js';
 
 /**
  * Mock data layer.
@@ -142,16 +143,13 @@ const InventoryPage = () => {
   return (
     <>
       <PageHeader
-        eyebrow="Manager"
+        eyebrow="Management"
         title="Inventory"
         subtitle={`${totalProducts} tracked products`}
       />
       <div className="admin-content">
         <div className="kpi-grid">
-          <KpiCard
-            label="Total Asset Value"
-            value={`₱${totalAssetValue.toLocaleString('en-PH')}`}
-          />
+          <KpiCard label="Total Asset Value" value={formatCurrency(totalAssetValue)} />
           <KpiCard label="Total Products Count" value={totalProducts} />
         </div>
 

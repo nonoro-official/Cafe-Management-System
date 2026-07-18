@@ -4,6 +4,7 @@ import PageHeader from '../components/admin/PageHeader.jsx';
 import KpiCard from '../components/admin/KpiCard.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
+import { formatCurrency } from '../utilities/currency.js';
 import {
   getSalesReport,
   getDashboardOverview,
@@ -11,12 +12,23 @@ import {
   getSalesTrend,
 } from '../services/reportService.js';
 
-const peso = (n) => `₱${Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
-
-const todayRange = () => {
+const dayRange = (offsetDays) => {
   const start = new Date();
+  start.setDate(start.getDate() - offsetDays);
   start.setHours(0, 0, 0, 0);
-  return { from: start.toISOString(), to: new Date().toISOString() };
+  const end = new Date(start);
+  end.setHours(23, 59, 59, 999);
+  return { from: start.toISOString(), to: end.toISOString() };
+};
+
+const trendFor = (todayValue, yesterdayValue) => {
+  if (!yesterdayValue) return null;
+  const delta = ((todayValue - yesterdayValue) / yesterdayValue) * 100;
+  if (Math.abs(delta) < 1) return { label: '– flat vs. yesterday', tone: 'is-flat' };
+  const rounded = Math.abs(Math.round(delta));
+  return delta > 0
+    ? { label: `▲ ${rounded}% vs. yesterday`, tone: '' }
+    : { label: `▼ ${rounded}% vs. yesterday`, tone: 'is-down' };
 };
 
 const DashboardPage = () => {
@@ -25,6 +37,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [today, setToday] = useState(null);
+  const [yesterday, setYesterday] = useState(null);
   const [overview, setOverview] = useState(null);
   const [topProducts, setTopProducts] = useState([]);
   const [trend, setTrend] = useState([]);
@@ -36,14 +49,16 @@ const DashboardPage = () => {
       setLoading(true);
       setError('');
       try {
-        const [todaySales, overviewData, top, salesTrend] = await Promise.all([
-          getSalesReport(todayRange()),
+        const [todaySales, yesterdaySales, overviewData, top, salesTrend] = await Promise.all([
+          getSalesReport(dayRange(0)),
+          getSalesReport(dayRange(1)),
           getDashboardOverview(),
           getTopProducts({ limit: 5 }),
           getSalesTrend({}),
         ]);
         if (cancelled) return;
         setToday(todaySales);
+        setYesterday(yesterdaySales);
         setOverview(overviewData);
         setTopProducts(top);
         setTrend(salesTrend.slice(-7));
@@ -63,7 +78,7 @@ const DashboardPage = () => {
   if (loading) {
     return (
       <>
-        <PageHeader eyebrow="Manager" title="Dashboard" subtitle="Loading today's numbers..." />
+        <PageHeader eyebrow="Management" title="Dashboard" subtitle="Loading today's numbers..." />
         <div className="admin-content">
           <LoadingSpinner label="Fetching dashboard data" />
         </div>
@@ -84,91 +99,115 @@ const DashboardPage = () => {
 
   const maxTrendRevenue = Math.max(1, ...trend.map((t) => t.revenue));
   const maxTrendOrders = Math.max(1, ...trend.map((t) => t.orders));
+  const revenueTrend = trendFor(today?.totals?.revenue ?? 0, yesterday?.totals?.revenue ?? 0);
+  const ordersTrend = trendFor(today?.totals?.orders ?? 0, yesterday?.totals?.orders ?? 0);
 
   return (
     <>
-      <PageHeader eyebrow="Manager" title="Dashboard" subtitle="Kiosk Overview" />
-      <div className="admin-content">
-        <div className="kpi-grid">
-          <KpiCard label="Today's Revenue" value={peso(today?.totals?.revenue)} />
-          <KpiCard label="Today's Orders" value={today?.totals?.orders ?? 0} />
-          <KpiCard label="Total Products" value={overview?.products ?? 0} />
-          <KpiCard label="Total Customers" value={overview?.customers ?? 0} />
-        </div>
-
-        <div className="charts-row">
-          <div className="panel">
-            <div className="panel__head">
-              <h3>Revenue Trend (Last 7 Days)</h3>
-            </div>
-            {trend.length === 0 ? (
-              <p className="empty-state">
-                No orders yet — the trend will fill in once orders come through.
-              </p>
-            ) : (
-              <div className="bars">
-                {trend.map((point) => (
-                  <div className="bars__col" key={point.date}>
-                    <div
-                      className={`bars__bar${point.revenue === maxTrendRevenue ? ' is-peak' : ''}`}
-                      style={{ height: `${Math.max(6, (point.revenue / maxTrendRevenue) * 100)}%` }}
-                    />
-                    <span className="bars__label">{point.date.slice(5)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+      <PageHeader eyebrow="Management" title="Dashboard" subtitle="Overview" />
+      <div className="admin-content dashboard-layout">
+        <div className="dashboard-main">
+          <div className="kpi-grid">
+            <KpiCard
+              label="Today's Revenue"
+              value={formatCurrency(today?.totals?.revenue)}
+              trend={revenueTrend?.label}
+              trendTone={revenueTrend?.tone}
+            />
+            <KpiCard
+              label="Today's Orders"
+              value={today?.totals?.orders ?? 0}
+              trend={ordersTrend?.label}
+              trendTone={ordersTrend?.tone}
+            />
+            <KpiCard label="Total Products" value={overview?.products ?? 0} />
+            <KpiCard label="Total Customers" value={overview?.customers ?? 0} />
           </div>
 
-          <div className="panel">
-            <div className="panel__head">
-              <h3>Orders Trend (Last 7 Days)</h3>
-            </div>
-            {trend.length === 0 ? (
-              <p className="empty-state">
-                No orders yet — the trend will fill in once orders come through.
-              </p>
-            ) : (
-              <div className="bars">
-                {trend.map((point) => (
-                  <div className="bars__col" key={point.date}>
-                    <div
-                      className={`bars__bar${point.orders === maxTrendOrders ? ' is-peak' : ''}`}
-                      style={{ height: `${Math.max(6, (point.orders / maxTrendOrders) * 100)}%` }}
-                    />
-                    <span className="bars__label">{point.date.slice(5)}</span>
-                  </div>
-                ))}
+          <div className="charts-row">
+            <div className="panel">
+              <div className="panel__head">
+                <h3>Revenue Trend (Last 7 Days)</h3>
               </div>
-            )}
-          </div>
-        </div>
+              {trend.length === 0 ? (
+                <p className="empty-state">
+                  No orders yet — the trend will fill in once orders come through.
+                </p>
+              ) : (
+                <div className="bars">
+                  {trend.map((point) => (
+                    <div className="bars__col" key={point.date}>
+                      <div
+                        className={`bars__bar${point.revenue === maxTrendRevenue ? ' is-peak' : ''}`}
+                        style={{
+                          height: `${Math.max(6, (point.revenue / maxTrendRevenue) * 100)}%`,
+                        }}
+                      />
+                      <span className="bars__label">{point.date.slice(5)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-        <div className="lists-row">
+            <div className="panel">
+              <div className="panel__head">
+                <h3>Orders Trend (Last 7 Days)</h3>
+              </div>
+              {trend.length === 0 ? (
+                <p className="empty-state">
+                  No orders yet — the trend will fill in once orders come through.
+                </p>
+              ) : (
+                <div className="bars">
+                  {trend.map((point) => (
+                    <div className="bars__col" key={point.date}>
+                      <div
+                        className={`bars__bar${point.orders === maxTrendOrders ? ' is-peak' : ''}`}
+                        style={{ height: `${Math.max(6, (point.orders / maxTrendOrders) * 100)}%` }}
+                      />
+                      <span className="bars__label">{point.date.slice(5)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="panel">
             <div className="panel__head">
               <h3>Low Stock Items</h3>
             </div>
-            <p className="empty-state">Backend stuf</p>
+            <p className="empty-state">
+              Stock tracking isn't in the Product schema yet — this panel will populate once
+              inventory fields (stock, SKU, reorder threshold) are added on the backend.
+            </p>
           </div>
+        </div>
 
-          <div className="panel">
-            <div className="panel__head">
-              <h3>Top Sellers Today</h3>
-            </div>
+        <aside className="dashboard-sidebar">
+          <div className="register-cart-head">
+            <h3 className="register-cart-head__title">Top Sellers Today</h3>
+          </div>
+          <div className="dashboard-sidebar__list">
             {topProducts.length === 0 ? (
               <p className="empty-state">No sales recorded yet.</p>
             ) : (
               topProducts.map((product, index) => (
                 <div className="rank-row" key={product.productId || product.name}>
                   <span className="rank-row__num">{index + 1}</span>
+                  {product.image ? (
+                    <img className="rank-row__thumb" src={product.image} alt={product.name} />
+                  ) : (
+                    <div className="rank-row__thumb" />
+                  )}
                   <span className="rank-row__name">{product.name}</span>
                   <span className="rank-row__meta">{product.quantitySold} sold</span>
                 </div>
               ))
             )}
           </div>
-        </div>
+        </aside>
       </div>
     </>
   );

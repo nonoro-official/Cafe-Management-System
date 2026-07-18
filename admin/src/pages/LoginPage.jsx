@@ -39,8 +39,8 @@ const LoginPage = () => {
             <span>M</span>
           </div>
           <div>
-            <div className="admin-brand__name">MODA</div>
-            <div className="admin-brand__role">Manager Dashboard</div>
+            <div className="admin-brand__name">MODA Cafe & Bakery</div>
+            <div className="admin-brand__role">Admin Dashboard</div>
           </div>
         </div>
 
@@ -75,8 +75,9 @@ const LoginPage = () => {
         </button>
 
         <p className="auth-hint">
-          Use the seeded admin account (<code>SEED_ADMIN_EMAIL</code> / <code>SEED_ADMIN_PASSWORD</code> from
-          the server&apos;s <code>.env</code>) after running <code>npm run seed</code>.
+          Use the seeded admin account (<code>SEED_ADMIN_EMAIL</code> /{' '}
+          <code>SEED_ADMIN_PASSWORD</code> from the server&apos;s <code>.env</code>) after running{' '}
+          <code>npm run seed</code>.
         </p>
       </form>
     </div>

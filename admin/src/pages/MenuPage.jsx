@@ -12,8 +12,7 @@ import {
   deleteProduct,
 } from '../services/productService.js';
 import { listCategories } from '../services/categoryService.js';
-
-const peso = (n) => `₱${Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+import { formatCurrency, CURRENCY_SYMBOL } from '../utilities/currency.js';
 
 const SORT_OPTIONS = [
   { value: 'createdAt:desc', label: 'Newest first' },
@@ -141,7 +140,7 @@ const MenuPage = () => {
 
   return (
     <>
-      <PageHeader eyebrow="Manager" title="Menu" subtitle={`${products.length} items`} />
+      <PageHeader eyebrow="Management" title="Menu" subtitle={`${products.length} items`} />
       <div className="admin-content">
         <Toolbar
           searchValue={search}
@@ -187,7 +186,7 @@ const MenuPage = () => {
                 </div>
                 <div className="item-card__name">{product.name}</div>
                 <div className="item-card__foot">
-                  <span className="item-card__price">{peso(product.price)}</span>
+                  <span className="item-card__price">{formatCurrency(product.price)}</span>
                   <div className="item-card__actions">
                     <button
                       type="button"
@@ -250,7 +249,7 @@ const MenuPage = () => {
                 </select>
               </div>
               <div className="field-group">
-                <label htmlFor="price">Price (₱)</label>
+                <label htmlFor="price">Price ({CURRENCY_SYMBOL})</label>
                 <input
                   id="price"
                   type="number"
