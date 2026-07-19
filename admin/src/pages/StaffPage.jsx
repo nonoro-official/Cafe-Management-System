@@ -76,7 +76,13 @@ const StaffPage = () => {
 
   const openEditModal = (member) => {
     setEditingId(member._id);
-    setForm({ name: member.name, email: member.email, password: '', phone: member.phone || '', isActive: member.isActive });
+    setForm({
+      name: member.name,
+      email: member.email,
+      password: '',
+      phone: member.phone || '',
+      isActive: member.isActive,
+    });
     setFormError('');
     setModalOpen(true);
   };
@@ -84,14 +90,23 @@ const StaffPage = () => {
   const handleSave = async (event) => {
     event.preventDefault();
     if (!form.name.trim() || !form.email.trim() || (!editingId && form.password.length < 8)) {
-      setFormError(editingId ? 'Name and email are required.' : 'Name, email, and an 8+ character password are required.');
+      setFormError(
+        editingId
+          ? 'Name and email are required.'
+          : 'Name, email, and an 8+ character password are required.',
+      );
       return;
     }
     setSaving(true);
     setFormError('');
     try {
       if (editingId) {
-        const payload = { name: form.name, email: form.email, phone: form.phone, isActive: form.isActive };
+        const payload = {
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          isActive: form.isActive,
+        };
         if (form.password) payload.password = form.password;
         const updated = await updateStaff(editingId, payload);
         setStaff((prev) => prev.map((s) => (s._id === editingId ? updated : s)));
@@ -119,7 +134,11 @@ const StaffPage = () => {
 
   return (
     <>
-      <PageHeader eyebrow="Manager" title="Staff" subtitle={`${meta?.total ?? staff.length} employees on record`} />
+      <PageHeader
+        eyebrow="Management"
+        title="Staff"
+        subtitle={`${meta?.total ?? staff.length} employees on record`}
+      />
       <div className="admin-content">
         <div className="kpi-grid">
           <KpiCard label="Total Employees" value={meta?.total ?? staff.length} />
@@ -178,10 +197,20 @@ const StaffPage = () => {
                         </StatusBadge>
                       </td>
                       <td className="data-table__actions">
-                        <button type="button" className="btn btn-icon" onClick={() => openEditModal(member)} title="Edit">
+                        <button
+                          type="button"
+                          className="btn btn-icon"
+                          onClick={() => openEditModal(member)}
+                          title="Edit"
+                        >
                           ✎
                         </button>
-                        <button type="button" className="btn btn-icon" onClick={() => handleDelete(member)} title="Remove">
+                        <button
+                          type="button"
+                          className="btn btn-icon"
+                          onClick={() => handleDelete(member)}
+                          title="Remove"
+                        >
                           🗑
                         </button>
                       </td>
@@ -195,27 +224,47 @@ const StaffPage = () => {
       </div>
 
       {modalOpen && (
-        <Modal title={editingId ? 'Edit Staff Member' : 'Add New Employee'} onClose={() => setModalOpen(false)}>
+        <Modal
+          title={editingId ? 'Edit Staff Member' : 'Add New Employee'}
+          onClose={() => setModalOpen(false)}
+        >
           <form onSubmit={handleSave}>
             {formError && <div className="form-error">{formError}</div>}
 
             <div className="field-group">
               <label htmlFor="staff-name">Full Name</label>
-              <input id="staff-name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input
+                id="staff-name"
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
 
             <div className="field-group">
               <label htmlFor="staff-email">Email</label>
-              <input id="staff-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              <input
+                id="staff-email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
             </div>
 
             <div className="field-row">
               <div className="field-group">
                 <label htmlFor="staff-phone">Phone</label>
-                <input id="staff-phone" type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                <input
+                  id="staff-phone"
+                  type="text"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
               </div>
               <div className="field-group">
-                <label htmlFor="staff-password">{editingId ? 'New Password (optional)' : 'Password'}</label>
+                <label htmlFor="staff-password">
+                  {editingId ? 'New Password (optional)' : 'Password'}
+                </label>
                 <input
                   id="staff-password"
                   type="password"
