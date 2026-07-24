@@ -1236,10 +1236,10 @@ body {
 }
 
 .kiosk-cashless__qr {
-  width: min(70vw, 15rem);
-  aspect-ratio: 1;
+  width: min(88vw, 21rem);
+  height: auto;
   object-fit: contain;
-  padding: 0.9rem;
+  padding: 0.6rem;
   border-radius: 1rem;
   background: #ffffff;
   border: 2px solid var(--kiosk-gold);
