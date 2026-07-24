@@ -15,7 +15,7 @@ const SORT_OPTIONS = [
   { value: 'stock:desc', label: 'Stock (High–Low)' },
 ];
 
-const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '' };
+const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '', image: '' };
 
 const errorMessage = (err, fallback) =>
   err?.response?.data?.message || err?.message || fallback;
@@ -91,6 +91,7 @@ const InventoryPage = () => {
       category: item.category ?? '',
       sku: item.sku,
       stock: item.stock,
+      image: item.image ?? '',
     });
     setFormError('');
     setModalOpen(true);
@@ -109,6 +110,7 @@ const InventoryPage = () => {
       category: form.category.trim(),
       sku: form.sku.trim(),
       stock: Math.min(100, Math.max(0, Number(form.stock))),
+      image: form.image.trim(),
     };
 
     setSaving(true);
@@ -193,8 +195,23 @@ const InventoryPage = () => {
                 visibleItems.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <div className="data-table__primary">{item.name}</div>
-                      <div className="data-table__sub">{item.sub}</div>
+                      <div className="data-table__item">
+                        {item.image ? (
+                          <img
+                            className="data-table__thumb"
+                            src={item.image}
+                            alt={item.name}
+                          />
+                        ) : (
+                          <div className="data-table__thumb data-table__thumb--empty">
+                            📦
+                          </div>
+                        )}
+                        <div>
+                          <div className="data-table__primary">{item.name}</div>
+                          <div className="data-table__sub">{item.sub}</div>
+                        </div>
+                      </div>
                     </td>
                     <td>{item.category}</td>
                     <td>{item.sku}</td>
@@ -299,6 +316,17 @@ const InventoryPage = () => {
                 max="100"
                 value={form.stock}
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              />
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="inv-image">Image URL</label>
+              <input
+                id="inv-image"
+                type="text"
+                value={form.image}
+                onChange={(e) => setForm({ ...form, image: e.target.value })}
+                placeholder="/api/images/inventory/..."
               />
             </div>
 

@@ -7,6 +7,9 @@
  *
  *   npm run seed
  */
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import { connectDatabase } from '../config/db.js';
 import { env } from '../config/env.js';
@@ -16,6 +19,40 @@ import { Category } from '../models/category.model.js';
 import { Product } from '../models/product.model.js';
 import { Inventory } from '../models/inventory.model.js';
 import { ROLES } from '../utilities/constants.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const IMAGE_EXTENSIONS = ['.webp', '.jpg', '.jpeg', '.png', '.gif', '.avif'];
+
+/**
+ * Scans server/public/images/<subdir> and returns a map of
+ * { "<basename without extension>": "/api/images/<subdir>/<file>" }.
+ *
+ * Files are matched to products/inventory by name (extension-agnostic), so the
+ * only convention required is that each image is named after the item it
+ * represents, e.g. "Caffe Latte.jpg". Nested folders (e.g. leftover Drive
+ * download dirs) are ignored.
+ */
+const buildImageMap = (subdir) => {
+  const dir = path.join(__dirname, '../../public/images', subdir);
+  const map = {};
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    logger.warn(`No image directory found at ${dir}`);
+    return map;
+  }
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const ext = path.extname(entry.name);
+    if (!IMAGE_EXTENSIONS.includes(ext.toLowerCase())) continue;
+    const base = path.basename(entry.name, ext);
+    // Encode the filename so spaces/parentheses are URL-safe.
+    map[base] = `/api/images/${subdir}/${encodeURIComponent(entry.name)}`;
+  }
+  return map;
+};
 
 const categorySeeds = [
   { name: 'Coffee', description: 'Espresso-based and brewed coffees', sortOrder: 1 },
@@ -111,16 +148,24 @@ const inventorySeeds = [
 ];
 
 const seedInventory = async () => {
+  const inventoryImages = buildImageMap('inventory');
+
   for (const seed of inventorySeeds) {
+    const image = inventoryImages[seed.name] || '';
     const exists = await Inventory.findOne({ sku: seed.sku });
     if (!exists) {
-      await Inventory.create(seed);
+      await Inventory.create({ ...seed, image });
+    } else if (image && !exists.image) {
+      exists.image = image;
+      await exists.save();
     }
   }
   logger.info('Inventory seeded');
 };
 
 const seedCatalog = async () => {
+  const productImages = buildImageMap('products');
+
   for (const seed of categorySeeds) {
     let category = await Category.findOne({ name: seed.name });
     if (!category) {
@@ -129,9 +174,15 @@ const seedCatalog = async () => {
     }
 
     for (const product of productSeeds[seed.name] || []) {
+      const image = productImages[product.name] || '';
       const exists = await Product.findOne({ name: product.name, category: category._id });
       if (!exists) {
-        await Product.create({ ...product, category: category._id });
+        await Product.create({ ...product, category: category._id, image });
+      } else if (image && !exists.image) {
+        // Backfill images onto products created before images were added,
+        // without clobbering an image an admin may have set by hand.
+        exists.image = image;
+        await exists.save();
       }
     }
   }

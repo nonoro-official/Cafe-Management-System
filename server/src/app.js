@@ -1,3 +1,5 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -8,6 +10,8 @@ import { env } from './config/env.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import { notFoundHandler } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -49,6 +53,16 @@ app.get('/', (req, res) => {
     documentation: '/api/health',
   });
 });
+
+// Product/inventory images are stored on disk under server/public/images and
+// referenced by the DB `image` field as `/api/images/...`. Mounting them under
+// /api means the existing Vite (dev) and nginx (prod) proxies route them to the
+// backend with no extra config. Registered before apiLimiter so image loads
+// (many per page) are never rate-limited.
+app.use(
+  '/api/images',
+  express.static(path.join(__dirname, '../public/images'), { maxAge: '30d' }),
+);
 
 app.use('/api', apiLimiter, routes);
 

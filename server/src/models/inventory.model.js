@@ -49,6 +49,12 @@ const inventorySchema = new mongoose.Schema(
       min: [0, 'Unit value cannot be negative'],
       default: 45,
     },
+    // URL/path to a thumbnail image, e.g. `/api/images/inventory/<file>`.
+    image: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   {
     timestamps: true,
