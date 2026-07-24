@@ -14,6 +14,7 @@ import { logger } from '../utilities/logger.js';
 import { User } from '../models/user.model.js';
 import { Category } from '../models/category.model.js';
 import { Product } from '../models/product.model.js';
+import { Inventory } from '../models/inventory.model.js';
 import { ROLES } from '../utilities/constants.js';
 
 const categorySeeds = [
@@ -84,6 +85,41 @@ const seedCustomer = async () => {
   logger.info(`Created sample customer: ${email}`);
 };
 
+const seedKiosk = async () => {
+  const existing = await User.findOne({ email: env.seed.kioskEmail });
+  if (existing) {
+    logger.info(`Kiosk account already exists: ${env.seed.kioskEmail}`);
+    return;
+  }
+
+  // Walk-up kiosk orders are attributed to this shared customer-role account.
+  await User.create({
+    name: env.seed.kioskName,
+    email: env.seed.kioskEmail,
+    password: env.seed.kioskPassword,
+    role: ROLES.CUSTOMER,
+  });
+  logger.info(`Created kiosk account: ${env.seed.kioskEmail}`);
+};
+
+const inventorySeeds = [
+  { name: 'Ethiopia Yirgacheffe Beans', sub: '18 kg on hand', category: 'Coffee', sku: 'CF-1042', stock: 72 },
+  { name: 'Oat Milk (1L)', sub: '6 units on hand', category: 'Dairy Alt.', sku: 'DA-2210', stock: 12 },
+  { name: 'Vanilla Syrup (750ml)', sub: '2 bottles on hand', category: 'Syrups', sku: 'SY-0087', stock: 8 },
+  { name: 'Paper Cups 12oz', sub: '340 pcs on hand', category: 'Packaging', sku: 'PK-1180', stock: 34 },
+  { name: 'Croissant Dough (Frozen)', sub: '61 units on hand', category: 'Bakery', sku: 'BK-3305', stock: 61 },
+];
+
+const seedInventory = async () => {
+  for (const seed of inventorySeeds) {
+    const exists = await Inventory.findOne({ sku: seed.sku });
+    if (!exists) {
+      await Inventory.create(seed);
+    }
+  }
+  logger.info('Inventory seeded');
+};
+
 const seedCatalog = async () => {
   for (const seed of categorySeeds) {
     let category = await Category.findOne({ name: seed.name });
@@ -107,7 +143,9 @@ const run = async () => {
     await connectDatabase();
     await seedAdmin();
     await seedCustomer();
+    await seedKiosk();
     await seedCatalog();
+    await seedInventory();
     logger.info('Seeding complete');
   } catch (error) {
     logger.error('Seeding failed', { message: error.message });

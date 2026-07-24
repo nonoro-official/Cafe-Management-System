@@ -19,30 +19,38 @@ import CustomersPage from '../pages/CustomersPage.jsx';
 // (per your last file listing): CustomersPage, ReportsPage, SettingsPage.
 // Add them back in once those files actually exist
 
-const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
-  {
-    element: <RequireAuth />,
-    children: [
-      {
-        path: '/',
-        element: <MainLayout />,
-        children: [
-          { index: true, element: <DashboardPage /> },
-          { path: 'menu', element: <MenuPage /> },
-          { path: 'inventory', element: <InventoryPage /> },
-          { path: 'staff', element: <StaffPage /> },
-          { path: 'order-history', element: <OrderHistoryPage /> },
-          { path: 'register', element: <RegisterPage /> },
-          { path: 'orders', element: <OrdersPage /> },
-          { path: 'orders/:id', element: <OrderDetailsPage /> },
-          { path: 'kitchen-queue', element: <KitchenQueuePage /> },
-          { path: 'transactions', element: <TransactionsPage /> },
-          { path: 'customers', element: <CustomersPage /> },
-        ],
-      },
-    ],
-  },
-]);
+// Keep the router basename in sync with the Vite `base` (/admin/ in the
+// reverse-proxy deployment, / in isolation) so links resolve correctly
+// whether the app is mounted at the root or under /admin/.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
+const router = createBrowserRouter(
+  [
+    { path: '/login', element: <LoginPage /> },
+    {
+      element: <RequireAuth />,
+      children: [
+        {
+          path: '/',
+          element: <MainLayout />,
+          children: [
+            { index: true, element: <DashboardPage /> },
+            { path: 'menu', element: <MenuPage /> },
+            { path: 'inventory', element: <InventoryPage /> },
+            { path: 'staff', element: <StaffPage /> },
+            { path: 'order-history', element: <OrderHistoryPage /> },
+            { path: 'register', element: <RegisterPage /> },
+            { path: 'orders', element: <OrdersPage /> },
+            { path: 'orders/:id', element: <OrderDetailsPage /> },
+            { path: 'kitchen-queue', element: <KitchenQueuePage /> },
+            { path: 'transactions', element: <TransactionsPage /> },
+            { path: 'customers', element: <CustomersPage /> },
+          ],
+        },
+      ],
+    },
+  ],
+  { basename },
+);
 
 export default router;

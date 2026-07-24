@@ -1,9 +1,10 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import KioskCategoryBar from '../components/kiosk/KioskCategoryBar.jsx';
 import KioskMenuItemCard from '../components/kiosk/KioskMenuItemCard.jsx';
 import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
-import { kioskCategories, getMenuItemsByCategory } from '../data/kioskMenu.js';
+import { useMenu } from '../contexts/MenuContext.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
 
@@ -18,10 +19,18 @@ const KioskDashboard = () => {
     addToCart,
     removeFromCart,
   } = useKioskOrder();
+  const { categories, loading, error, reload, getItemsByCategory } = useMenu();
 
   useDocumentTitle(`${APP_NAME} | Menu`);
 
-  const visibleItems = getMenuItemsByCategory(activeCategoryId);
+  // Select the first category once the live menu has loaded.
+  useEffect(() => {
+    if (!activeCategoryId && categories.length > 0) {
+      setActiveCategoryId(categories[0].id);
+    }
+  }, [activeCategoryId, categories, setActiveCategoryId]);
+
+  const visibleItems = getItemsByCategory(activeCategoryId);
   const orderTypeLabel = orderType === 'take-out' ? 'Take-out' : 'Dine-in';
 
   const handlePlaceOrder = () => {
@@ -44,24 +53,37 @@ const KioskDashboard = () => {
         </header>
 
         <KioskCategoryBar
-          categories={kioskCategories}
+          categories={categories}
           activeCategoryId={activeCategoryId}
           onSelect={setActiveCategoryId}
         />
       </div>
 
       <div className="kiosk-dashboard__grid-wrap">
-        <div className="kiosk-dashboard__grid">
-          {visibleItems.map((item) => (
-            <KioskMenuItemCard
-              key={item.id}
-              item={item}
-              quantity={cart[item.id] ?? 0}
-              onAdd={() => addToCart(item.id)}
-              onRemove={() => removeFromCart(item.id)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p className="kiosk-dashboard__status">Loading the menu…</p>
+        ) : error ? (
+          <div className="kiosk-dashboard__status">
+            <p>{error}</p>
+            <button type="button" className="kiosk-btn-secondary" onClick={reload}>
+              Try again
+            </button>
+          </div>
+        ) : visibleItems.length === 0 ? (
+          <p className="kiosk-dashboard__status">No items available in this category yet.</p>
+        ) : (
+          <div className="kiosk-dashboard__grid">
+            {visibleItems.map((item) => (
+              <KioskMenuItemCard
+                key={item.id}
+                item={item}
+                quantity={cart[item.id] ?? 0}
+                onAdd={() => addToCart(item.id)}
+                onRemove={() => removeFromCart(item.id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <footer className="kiosk-dashboard__footer">

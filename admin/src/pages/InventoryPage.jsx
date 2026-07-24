@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/admin/PageHeader.jsx';
 import Toolbar from '../components/admin/Toolbar.jsx';
 import Modal from '../components/admin/Modal.jsx';
@@ -7,57 +7,7 @@ import KpiCard from '../components/admin/KpiCard.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
 import { formatCurrency } from '../utilities/currency.js';
-
-/**
- * Mock data layer.
- * There is no Inventory/stock schema on the backend yet (Product has no
- * `stock`, `sku`, or `unitValue` fields — see server/src/models/product.model.js).
- * This page is fully interactive against local state so the UI/UX is ready
- * to wire up, but nothing here persists yet.
- */
-
-const SEED = [
-  {
-    id: 1,
-    name: 'Ethiopia Yirgacheffe Beans',
-    sub: '18 kg on hand',
-    category: 'Coffee',
-    sku: 'CF-1042',
-    stock: 72,
-  },
-  {
-    id: 2,
-    name: 'Oat Milk (1L)',
-    sub: '6 units on hand',
-    category: 'Dairy Alt.',
-    sku: 'DA-2210',
-    stock: 12,
-  },
-  {
-    id: 3,
-    name: 'Vanilla Syrup (750ml)',
-    sub: '2 bottles on hand',
-    category: 'Syrups',
-    sku: 'SY-0087',
-    stock: 8,
-  },
-  {
-    id: 4,
-    name: 'Paper Cups 12oz',
-    sub: '340 pcs on hand',
-    category: 'Packaging',
-    sku: 'PK-1180',
-    stock: 34,
-  },
-  {
-    id: 5,
-    name: 'Croissant Dough (Frozen)',
-    sub: '61 units on hand',
-    category: 'Bakery',
-    sku: 'BK-3305',
-    stock: 61,
-  },
-];
+import { inventoryService } from '../services/inventoryService.js';
 
 const SORT_OPTIONS = [
   { value: 'name:asc', label: 'Name (A–Z)' },
@@ -71,21 +21,49 @@ const stockLabel = (stock) =>
 
 const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '' };
 
+const errorMessage = (err, fallback) =>
+  err?.response?.data?.message || err?.message || fallback;
+
 const InventoryPage = () => {
   useDocumentTitle(`${APP_NAME} | Inventory`);
 
-  const [items, setItems] = useState(SEED);
+  const [items, setItems] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('name:asc');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError('');
+    try {
+      const [listRes, summaryRes] = await Promise.all([
+        inventoryService.list({ limit: 100 }),
+        inventoryService.summary(),
+      ]);
+      setItems(listRes.data ?? []);
+      setSummary(summaryRes.data ?? null);
+    } catch (err) {
+      setLoadError(errorMessage(err, 'Unable to load inventory.'));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const visibleItems = useMemo(() => {
     const [field, order] = sort.split(':');
     const filtered = items.filter((item) =>
-      (item.name + ' ' + item.category + ' ' + item.sku)
+      `${item.name} ${item.category} ${item.sku}`
         .toLowerCase()
         .includes(search.trim().toLowerCase()),
     );
@@ -97,8 +75,9 @@ const InventoryPage = () => {
     return filtered;
   }, [items, search, sort]);
 
-  const totalProducts = items.length;
-  const totalAssetValue = items.reduce((sum, item) => sum + item.stock * 45, 0); // placeholder valuation
+  const totalProducts = summary?.totalProducts ?? items.length;
+  const totalAssetValue =
+    summary?.totalAssetValue ?? items.reduce((sum, item) => sum + item.stock * 45, 0);
 
   const openAddModal = () => {
     setEditingId(null);
@@ -111,8 +90,8 @@ const InventoryPage = () => {
     setEditingId(item.id);
     setForm({
       name: item.name,
-      sub: item.sub,
-      category: item.category,
+      sub: item.sub ?? '',
+      category: item.category ?? '',
       sku: item.sku,
       stock: item.stock,
     });
@@ -120,24 +99,46 @@ const InventoryPage = () => {
     setModalOpen(true);
   };
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
     if (!form.name.trim() || !form.sku.trim() || form.stock === '') {
       setFormError('Name, SKU, and stock level are required.');
       return;
     }
-    const payload = { ...form, stock: Math.min(100, Math.max(0, Number(form.stock))) };
-    if (editingId) {
-      setItems((prev) => prev.map((i) => (i.id === editingId ? { ...i, ...payload } : i)));
-    } else {
-      setItems((prev) => [{ id: Date.now(), ...payload }, ...prev]);
+
+    const payload = {
+      name: form.name.trim(),
+      sub: form.sub.trim(),
+      category: form.category.trim(),
+      sku: form.sku.trim(),
+      stock: Math.min(100, Math.max(0, Number(form.stock))),
+    };
+
+    setSaving(true);
+    setFormError('');
+    try {
+      if (editingId) {
+        await inventoryService.update(editingId, payload);
+      } else {
+        await inventoryService.create(payload);
+      }
+      setModalOpen(false);
+      await load();
+    } catch (err) {
+      setFormError(errorMessage(err, 'Could not save the item.'));
+    } finally {
+      setSaving(false);
     }
-    setModalOpen(false);
   };
 
-  const handleDelete = (item) => {
+  const handleDelete = async (item) => {
     if (!window.confirm(`Remove "${item.name}" from inventory?`)) return;
-    setItems((prev) => prev.filter((i) => i.id !== item.id));
+    try {
+      await inventoryService.remove(item.id);
+      await load();
+    } catch (err) {
+      setLoadError(errorMessage(err, 'Could not delete the item.'));
+    }
   };
 
   return (
@@ -164,6 +165,8 @@ const InventoryPage = () => {
           onAction={openAddModal}
         />
 
+        {loadError && <div className="form-error">{loadError}</div>}
+
         <div className="table-wrap">
           <table className="data-table">
             <thead>
@@ -177,7 +180,13 @@ const InventoryPage = () => {
               </tr>
             </thead>
             <tbody>
-              {visibleItems.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="empty-state">
+                    Loading inventory…
+                  </td>
+                </tr>
+              ) : visibleItems.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="empty-state">
                     No items match these filters.
@@ -300,8 +309,8 @@ const InventoryPage = () => {
               <button type="button" className="btn btn-ghost" onClick={() => setModalOpen(false)}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
-                Save Item
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? 'Saving…' : 'Save Item'}
               </button>
             </div>
           </form>

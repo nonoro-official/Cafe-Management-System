@@ -17,17 +17,16 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
+// In the isolated-LAN deployment the SPAs and API are served from a single
+// origin behind nginx, so CORS is never triggered. The allowlist still matters
+// for local development, where the customer/admin dev servers run on separate
+// ports. Disallowed origins are rejected cleanly (no thrown 500).
 const allowedOrigins = [env.clientUrl, env.adminUrl];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`Origin ${origin} is not allowed by CORS`));
+      callback(null, !origin || allowedOrigins.includes(origin));
     },
     credentials: true,
   }),

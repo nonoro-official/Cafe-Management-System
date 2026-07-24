@@ -8,7 +8,8 @@ import { APP_NAME } from '../utilities/constants.js';
 
 const KioskCashlessPayment = () => {
   const navigate = useNavigate();
-  const { cartCount, paymentMethod, setCashlessProvider, assignOrderNumber } = useKioskOrder();
+  const { cartCount, paymentMethod, setCashlessProvider, submitOrder, submitting, submitError } =
+    useKioskOrder();
 
   useDocumentTitle(`${APP_NAME} | Cashless Payment`);
 
@@ -23,10 +24,19 @@ const KioskCashlessPayment = () => {
     }
   }, [cartCount, paymentMethod, navigate]);
 
-  const handleSelectMethod = (method) => {
+  const handleSelectMethod = async (method) => {
+    if (submitting) {
+      return;
+    }
+
     setCashlessProvider(method.id);
-    assignOrderNumber();
-    navigate('/kiosk/order-number');
+
+    try {
+      await submitOrder('cashless');
+      navigate('/kiosk/order-number');
+    } catch {
+      // submitError is surfaced below; the guest stays on this page to retry.
+    }
   };
 
   if (cartCount === 0 || paymentMethod !== 'cashless') {
@@ -49,6 +59,7 @@ const KioskCashlessPayment = () => {
               type="button"
               className="kiosk-cashless__method"
               onClick={() => handleSelectMethod(method)}
+              disabled={submitting}
               aria-label={`Pay with ${method.label}`}
             >
               {method.image ? (
@@ -60,6 +71,9 @@ const KioskCashlessPayment = () => {
             </button>
           ))}
         </div>
+
+        {submitting && <p className="kiosk-cashless__status">Placing your order…</p>}
+        {submitError && <p className="kiosk-cashless__error">{submitError}</p>}
       </div>
     </div>
   );

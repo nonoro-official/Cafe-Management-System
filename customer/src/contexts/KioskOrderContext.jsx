@@ -1,20 +1,32 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { kioskCategories } from '../data/kioskMenu.js';
-import { createKioskReferenceNumber } from '../utilities/kioskReferenceNumber.js';
+import { createKioskOrder } from '../services/orderService.js';
 
 const KioskOrderContext = createContext(undefined);
 
+// Translate the kiosk's UI values into the backend's accepted enums.
+const toApiOrderType = (orderType) => (orderType === 'take-out' ? 'takeout' : 'dine-in');
+const toApiPaymentMethod = (paymentMethod) => (paymentMethod === 'cash' ? 'cash' : 'cashless');
+
 export const KioskOrderProvider = ({ children }) => {
   const location = useLocation();
-  const [activeCategoryId, setActiveCategoryId] = useState(kioskCategories[0]?.id ?? '');
+  const [activeCategoryId, setActiveCategoryId] = useState('');
   const [cart, setCart] = useState({});
+  const [orderType, setOrderType] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [cashlessProvider, setCashlessProvider] = useState(null);
   const [orderNumber, setOrderNumber] = useState(null);
   const [ticketNumber, setTicketNumber] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-  const orderType = location.state?.orderType ?? null;
+  // Order type is chosen on the Home screen and passed via router state. Persist
+  // it here because later routes (cart, checkout, payment) don't carry state.
+  useEffect(() => {
+    if (location.state?.orderType) {
+      setOrderType(location.state.orderType);
+    }
+  }, [location.state]);
 
   const addToCart = useCallback((itemId) => {
     setCart((current) => ({
@@ -36,25 +48,50 @@ export const KioskOrderProvider = ({ children }) => {
     });
   }, []);
 
-  const assignOrderNumber = useCallback(() => {
-    const nextNumber = createKioskReferenceNumber();
-    setOrderNumber(nextNumber);
-    return nextNumber;
-  }, []);
+  /**
+   * Places the order against the backend kiosk endpoint and stores the
+   * server-generated order number (shown to the guest as both the order and
+   * ticket reference).
+   */
+  const submitOrder = useCallback(
+    async (method) => {
+      const items = Object.entries(cart).map(([productId, quantity]) => ({ productId, quantity }));
+      if (items.length === 0) {
+        throw new Error('Your cart is empty');
+      }
 
-  const assignTicketNumber = useCallback(() => {
-    const nextNumber = createKioskReferenceNumber();
-    setTicketNumber(nextNumber);
-    return nextNumber;
-  }, []);
+      setSubmitting(true);
+      setSubmitError('');
+      try {
+        const order = await createKioskOrder({
+          items,
+          paymentMethod: toApiPaymentMethod(method ?? paymentMethod),
+          orderType: toApiOrderType(orderType),
+        });
+        setOrderNumber(order.orderNumber);
+        setTicketNumber(order.orderNumber);
+        return order;
+      } catch (err) {
+        const message =
+          err?.response?.data?.message || 'We could not place your order. Please try again.';
+        setSubmitError(message);
+        throw err;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [cart, paymentMethod, orderType],
+  );
 
   const resetOrder = useCallback(() => {
     setCart({});
+    setOrderType(null);
     setPaymentMethod(null);
     setCashlessProvider(null);
     setOrderNumber(null);
     setTicketNumber(null);
-    setActiveCategoryId(kioskCategories[0]?.id ?? '');
+    setSubmitError('');
+    setActiveCategoryId('');
   }, []);
 
   const cartCount = useMemo(
@@ -75,8 +112,9 @@ export const KioskOrderProvider = ({ children }) => {
       setCashlessProvider,
       orderNumber,
       ticketNumber,
-      assignOrderNumber,
-      assignTicketNumber,
+      submitting,
+      submitError,
+      submitOrder,
       resetOrder,
       addToCart,
       removeFromCart,
@@ -90,8 +128,9 @@ export const KioskOrderProvider = ({ children }) => {
       cashlessProvider,
       orderNumber,
       ticketNumber,
-      assignOrderNumber,
-      assignTicketNumber,
+      submitting,
+      submitError,
+      submitOrder,
       resetOrder,
       addToCart,
       removeFromCart,

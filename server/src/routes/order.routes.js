@@ -3,16 +3,28 @@ import * as orderController from '../controllers/order.controller.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
+import { kioskOrderLimiter } from '../middleware/rateLimiter.js';
 import { ROLES } from '../utilities/constants.js';
 import { mongoIdParam, paginationQuery } from '../validators/common.validator.js';
 import {
   createOrderValidator,
+  createKioskOrderValidator,
+  createRegisterOrderValidator,
   listOrdersValidator,
   updateOrderStatusValidator,
   updatePaymentStatusValidator,
 } from '../validators/order.validator.js';
 
 const router = Router();
+
+// --- Public self-service kiosk ordering (no login required) ---
+// Declared before the authenticate guard below so walk-up kiosks can order.
+router.post(
+  '/kiosk',
+  kioskOrderLimiter,
+  validate(createKioskOrderValidator),
+  orderController.createKioskOrder,
+);
 
 router.use(authenticate);
 
@@ -43,6 +55,12 @@ router.patch(
 );
 
 // --- Admin management ---
+router.post(
+  '/register',
+  authorize(ROLES.ADMIN),
+  validate(createRegisterOrderValidator),
+  orderController.createRegisterOrder,
+);
 router.get(
   '/',
   authorize(ROLES.ADMIN),

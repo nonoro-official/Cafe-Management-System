@@ -28,3 +28,14 @@ export const authLimiter = rateLimit({
   message: { success: false, message: 'Too many authentication attempts, please try again later' },
   ...standardOptions,
 });
+
+/**
+ * Guards the public (unauthenticated) kiosk ordering endpoint against abuse
+ * while still allowing a busy kiosk to submit orders at a natural pace.
+ */
+export const kioskOrderLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  message: { success: false, message: 'Too many kiosk orders in a short time, please wait a moment' },
+  ...standardOptions,
+});

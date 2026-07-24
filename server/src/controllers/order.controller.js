@@ -9,6 +9,13 @@ export const createOrder = asyncHandler(async (req, res) => {
   sendCreated(res, { message: 'Order placed successfully', data: { order, receipt } });
 });
 
+// --- Public self-service kiosk (no authentication) ---
+
+export const createKioskOrder = asyncHandler(async (req, res) => {
+  const { order, receipt } = await orderService.createForKiosk(req.body);
+  sendCreated(res, { message: 'Order placed successfully', data: { order, receipt } });
+});
+
 export const listMyOrders = asyncHandler(async (req, res) => {
   const { orders, meta } = await orderService.listForCustomer(req.user.id, req.query);
   sendSuccess(res, { data: orders, meta });
@@ -25,6 +32,11 @@ export const cancelMyOrder = asyncHandler(async (req, res) => {
 });
 
 // --- Admin ---
+
+export const createRegisterOrder = asyncHandler(async (req, res) => {
+  const { order, receipt } = await orderService.createForRegister(req.user, req.body);
+  sendCreated(res, { message: 'Order placed successfully', data: { order, receipt } });
+});
 
 export const listOrders = asyncHandler(async (req, res) => {
   const { orders, meta } = await orderService.adminList(req.query);

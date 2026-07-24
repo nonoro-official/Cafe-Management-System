@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import KioskCartItemRow from '../components/kiosk/KioskCartItemRow.jsx';
 import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
-import { getMenuItemById } from '../data/kioskMenu.js';
+import { useMenu } from '../contexts/MenuContext.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
 
 const KioskCart = () => {
   const navigate = useNavigate();
   const { cart, cartCount, addToCart, removeFromCart } = useKioskOrder();
+  const { getItemById } = useMenu();
 
   useDocumentTitle(`${APP_NAME} | Your Orders`);
 
@@ -17,7 +18,7 @@ const KioskCart = () => {
     () =>
       Object.entries(cart)
         .map(([itemId, quantity]) => {
-          const item = getMenuItemById(itemId);
+          const item = getItemById(itemId);
 
           if (!item) {
             return null;
@@ -26,7 +27,7 @@ const KioskCart = () => {
           return { item, quantity };
         })
         .filter(Boolean),
-    [cart],
+    [cart, getItemById],
   );
 
   const cartTotal = useMemo(

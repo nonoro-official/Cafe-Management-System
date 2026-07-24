@@ -40,6 +40,14 @@ const orderSchema = new mongoose.Schema(
       enum: ORDER_TYPE_VALUES,
       default: ORDER_TYPES.DINE_IN,
     },
+    // Dine-in table identifier (e.g. "12"). Empty for take-out orders. The
+    // kitchen display and order screens read this to route dine-in orders.
+    tableNumber: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [20, 'Table number cannot exceed 20 characters'],
+    },
     status: {
       type: String,
       enum: ORDER_STATUS_VALUES,

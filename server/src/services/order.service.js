@@ -1,6 +1,7 @@
 import { Order } from '../models/order.model.js';
 import { Cart } from '../models/cart.model.js';
 import { Product } from '../models/product.model.js';
+import { User } from '../models/user.model.js';
 import { receiptService } from './receipt.service.js';
 import { ApiError } from '../utilities/apiError.js';
 import { parsePagination, buildPaginationMeta } from '../utilities/pagination.js';
@@ -23,7 +24,7 @@ class OrderService {
    *
    * @returns {Promise<{ order: object, receipt: object }>}
    */
-  async create(user, payload) {
+  async create(user, payload, overrides = {}) {
     const { fromCart, lineItems } = await this.#resolveLineItems(user.id, payload.items);
 
     if (lineItems.length === 0) {
@@ -34,30 +35,79 @@ class OrderService {
     const tax = round(subtotal * env.taxRate);
     const total = round(subtotal + tax);
 
-    const paymentMethod = payload.paymentMethod;
+    const paymentMethod =
+      payload.paymentMethod || overrides.defaultPaymentMethod || PAYMENT_METHODS.CASHLESS;
     const paymentStatus =
       paymentMethod === PAYMENT_METHODS.CASH ? PAYMENT_STATUS.PENDING : PAYMENT_STATUS.PAID;
 
-    const order = await this.#createWithUniqueNumber({
+    const orderData = {
       user: user.id,
-      customerName: user.name,
+      customerName: overrides.customerName ?? user.name,
       items: lineItems,
       orderType: payload.orderType || ORDER_TYPES.DINE_IN,
+      tableNumber: (payload.tableNumber || '').toString().trim(),
       paymentMethod,
       paymentStatus,
       notes: payload.notes || '',
       subtotal,
       tax,
       total,
-    });
+    };
 
-    const receipt = await receiptService.createForOrder(order);
-
-    if (fromCart) {
-      await Cart.updateOne({ user: user.id }, { $set: { items: [] } });
+    if (overrides.status) {
+      orderData.status = overrides.status;
     }
 
-    return { order, receipt };
+    // Standalone MongoDB has no multi-document transactions, so on any failure
+    // after the order is persisted we compensate by deleting the orphaned order
+    // rather than leaving an order without a receipt / with an uncleared cart.
+    let order;
+    try {
+      order = await this.#createWithUniqueNumber(orderData);
+      const receipt = await receiptService.createForOrder(order);
+
+      if (fromCart) {
+        await Cart.updateOne({ user: user.id }, { $set: { items: [] } });
+      }
+
+      return { order, receipt };
+    } catch (error) {
+      if (order?._id) {
+        await Order.deleteOne({ _id: order._id }).catch(() => {});
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Places an order from the public self-service kiosk. There is no logged-in
+   * customer, so the order is attributed to the seeded kiosk account. Items are
+   * always explicit (the kiosk has no server-side cart).
+   */
+  async createForKiosk(payload) {
+    const kioskUser = await User.findOne({ email: env.seed.kioskEmail });
+    if (!kioskUser) {
+      throw ApiError.badRequest(
+        'The kiosk account is not provisioned. Run `npm run seed` on the server.',
+      );
+    }
+
+    return this.create(kioskUser, payload);
+  }
+
+  /**
+   * Places a staff (point-of-sale) order from the admin Register screen. The
+   * order is attributed to the acting staff member, but the customer-facing
+   * name comes from the payload (walk-in name, blank for anonymous). Payment is
+   * typically collected later, so it defaults to cash/pending, and staff may
+   * push the order straight to the kitchen via `status`.
+   */
+  async createForRegister(user, payload) {
+    return this.create(user, payload, {
+      customerName: (payload.customerName || '').trim(),
+      status: payload.status,
+      defaultPaymentMethod: PAYMENT_METHODS.CASH,
+    });
   }
 
   async adminList(query = {}) {

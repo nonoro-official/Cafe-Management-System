@@ -4,8 +4,8 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 const baseOptions = () => ({
   httpOnly: true,
-  secure: env.isProduction,
-  sameSite: env.isProduction ? 'none' : 'lax',
+  secure: env.cookie.secure,
+  sameSite: env.cookie.sameSite,
   path: '/',
 });
 
