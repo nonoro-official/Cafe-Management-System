@@ -67,8 +67,8 @@ const TransactionsPage = () => {
         ) : orders.length === 0 ? (
           <p className="empty-state">No transactions recorded yet.</p>
         ) : (
-          <div className="table-wrap">
-            <table>
+          <div className="table-wrap" style={{ marginTop: '1.1rem' }}>
+            <table className="data-table">
               <thead>
                 <tr>
                   <th>Transaction ID</th>
