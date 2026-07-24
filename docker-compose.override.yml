@@ -1,0 +1,15 @@
+# Local deployment override.
+#
+# The target host already runs CasaOS on port 80, so the cafe web service
+# (nginx) cannot also bind host port 80. Docker Compose loads this file
+# automatically and merges it over docker-compose.yml, remapping only the
+# published host port. nginx still listens on 80 inside the container.
+#
+# Access the app at:
+#   http://<server-ip>:8080/          customer kiosk
+#   http://<server-ip>:8080/admin/    admin dashboard
+#   http://<server-ip>:8080/api/health
+services:
+  web:
+    ports:
+      - "8080:80"
