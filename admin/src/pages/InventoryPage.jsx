@@ -15,7 +15,7 @@ const SORT_OPTIONS = [
   { value: 'stock:desc', label: 'Stock (High–Low)' },
 ];
 
-const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '', image: '' };
+const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '' };
 
 const errorMessage = (err, fallback) =>
   err?.response?.data?.message || err?.message || fallback;
@@ -91,7 +91,6 @@ const InventoryPage = () => {
       category: item.category ?? '',
       sku: item.sku,
       stock: item.stock,
-      image: item.image ?? '',
     });
     setFormError('');
     setModalOpen(true);
@@ -110,7 +109,6 @@ const InventoryPage = () => {
       category: form.category.trim(),
       sku: form.sku.trim(),
       stock: Math.min(100, Math.max(0, Number(form.stock))),
-      image: form.image.trim(),
     };
 
     setSaving(true);
@@ -196,10 +194,10 @@ const InventoryPage = () => {
                   <tr key={item.id}>
                     <td>
                       <div className="data-table__item">
-                        {item.image ? (
+                        {item.imageLoc ? (
                           <img
                             className="data-table__thumb"
-                            src={item.image}
+                            src={item.imageLoc}
                             alt={item.name}
                           />
                         ) : (
@@ -320,14 +318,13 @@ const InventoryPage = () => {
             </div>
 
             <div className="field-group">
-              <label htmlFor="inv-image">Image URL</label>
-              <input
-                id="inv-image"
-                type="text"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="/api/images/inventory/..."
-              />
+              <label>Image</label>
+              <p className="field-hint">
+                The image is matched automatically from{' '}
+                <code>server/public/images/inventory</code> by the item name (e.g.{' '}
+                <code>{`${form.name || 'Item Name'}.webp`}</code>). Drop a matching file there to
+                set it.
+              </p>
             </div>
 
             <div className="modal-card__actions">

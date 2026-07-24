@@ -9,7 +9,6 @@ export const createInventoryValidator = [
     .toFloat(),
   body('sub').optional().isString().trim(),
   body('category').optional().isString().trim(),
-  body('image').optional().isString().trim(),
   body('unitValue')
     .optional()
     .isFloat({ min: 0 })
@@ -27,7 +26,6 @@ export const updateInventoryValidator = [
     .toFloat(),
   body('sub').optional().isString().trim(),
   body('category').optional().isString().trim(),
-  body('image').optional().isString().trim(),
   body('unitValue')
     .optional()
     .isFloat({ min: 0 })

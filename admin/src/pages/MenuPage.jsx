@@ -26,7 +26,6 @@ const emptyForm = {
   category: '',
   price: '',
   description: '',
-  image: '',
   isAvailable: true,
 };
 
@@ -94,7 +93,6 @@ const MenuPage = () => {
       category: product.category?._id || '',
       price: product.price,
       description: product.description || '',
-      image: product.image || '',
       isAvailable: product.isAvailable,
     });
     setFormError('');
@@ -176,8 +174,8 @@ const MenuPage = () => {
           <div className="item-grid">
             {products.map((product) => (
               <div className="item-card" key={product._id}>
-                {product.image ? (
-                  <img className="item-card__thumb" src={product.image} alt={product.name} />
+                {product.imageLoc ? (
+                  <img className="item-card__thumb" src={product.imageLoc} alt={product.name} />
                 ) : (
                   <div className="item-card__thumb item-card__thumb--empty">☕</div>
                 )}
@@ -272,14 +270,13 @@ const MenuPage = () => {
             </div>
 
             <div className="field-group">
-              <label htmlFor="image">Image URL</label>
-              <input
-                id="image"
-                type="text"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="https://..."
-              />
+              <label>Image</label>
+              <p className="field-hint">
+                The image is matched automatically from{' '}
+                <code>server/public/images/products</code> by the item name (e.g.{' '}
+                <code>{`${form.name || 'Item Name'}.webp`}</code>). Drop a matching file there to
+                set it.
+              </p>
             </div>
 
             <div className="field-group">

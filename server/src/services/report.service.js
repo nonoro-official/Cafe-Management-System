@@ -2,6 +2,7 @@ import { Order } from '../models/order.model.js';
 import { Product } from '../models/product.model.js';
 import { User } from '../models/user.model.js';
 import { ORDER_STATUS, ROLES } from '../utilities/constants.js';
+import { resolveImageLoc } from '../utilities/imageLocator.js';
 
 class ReportService {
   /**
@@ -81,6 +82,8 @@ class ReportService {
       name: row.name,
       quantitySold: row.quantitySold,
       revenue: Number(row.revenue.toFixed(2)),
+      // Aggregation bypasses model virtuals, so resolve the image by name here.
+      imageLoc: resolveImageLoc('products', row.name),
     }));
   }
 

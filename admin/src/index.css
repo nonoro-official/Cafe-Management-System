@@ -1064,6 +1064,21 @@ body {
   box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.18);
 }
 
+.field-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--brand-muted);
+}
+
+.field-hint code {
+  font-size: 0.72rem;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-border-soft);
+  border-radius: 5px;
+  padding: 0.05rem 0.3rem;
+}
+
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

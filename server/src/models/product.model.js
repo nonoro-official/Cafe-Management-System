@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { slugify } from '../utilities/slugify.js';
+import { resolveImageLoc } from '../utilities/imageLocator.js';
 
 const productSchema = new mongoose.Schema(
   {
@@ -31,11 +32,6 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Category is required'],
       index: true,
     },
-    image: {
-      type: String,
-      trim: true,
-      default: '',
-    },
     tags: {
       type: [String],
       default: [],
@@ -49,6 +45,7 @@ const productSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
+      virtuals: true,
       transform(doc, ret) {
         delete ret.__v;
         return ret;
@@ -56,6 +53,13 @@ const productSchema = new mongoose.Schema(
     },
   },
 );
+
+// `imageLoc` is derived from the item name at read time (see imageLocator) so
+// images are managed by dropping named files into server/public/images/products
+// rather than storing paths in the DB.
+productSchema.virtual('imageLoc').get(function getImageLoc() {
+  return resolveImageLoc('products', this.name);
+});
 
 // Text index powers keyword search across the most relevant fields.
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });

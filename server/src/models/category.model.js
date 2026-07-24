@@ -21,11 +21,6 @@ const categorySchema = new mongoose.Schema(
       default: '',
       maxlength: [500, 'Description cannot exceed 500 characters'],
     },
-    image: {
-      type: String,
-      trim: true,
-      default: '',
-    },
     sortOrder: {
       type: Number,
       default: 0,
