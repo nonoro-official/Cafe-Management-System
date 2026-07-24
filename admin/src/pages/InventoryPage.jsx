@@ -193,8 +193,23 @@ const InventoryPage = () => {
                 visibleItems.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <div className="data-table__primary">{item.name}</div>
-                      <div className="data-table__sub">{item.sub}</div>
+                      <div className="data-table__item">
+                        {item.imageLoc ? (
+                          <img
+                            className="data-table__thumb"
+                            src={item.imageLoc}
+                            alt={item.name}
+                          />
+                        ) : (
+                          <div className="data-table__thumb data-table__thumb--empty">
+                            📦
+                          </div>
+                        )}
+                        <div>
+                          <div className="data-table__primary">{item.name}</div>
+                          <div className="data-table__sub">{item.sub}</div>
+                        </div>
+                      </div>
                     </td>
                     <td>{item.category}</td>
                     <td>{item.sku}</td>
@@ -300,6 +315,16 @@ const InventoryPage = () => {
                 value={form.stock}
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
               />
+            </div>
+
+            <div className="field-group">
+              <label>Image</label>
+              <p className="field-hint">
+                The image is matched automatically from{' '}
+                <code>server/public/images/inventory</code> by the item name (e.g.{' '}
+                <code>{`${form.name || 'Item Name'}.webp`}</code>). Drop a matching file there to
+                set it.
+              </p>
             </div>
 
             <div className="modal-card__actions">

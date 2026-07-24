@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { resolveImageLoc } from '../utilities/imageLocator.js';
 
 /**
  * Supplies/ingredients tracked by the cafe (beans, milk, cups, etc.). This is
@@ -62,6 +63,12 @@ const inventorySchema = new mongoose.Schema(
     },
   },
 );
+
+// Derived from the item name at read time (see imageLocator); drop named files
+// into server/public/images/inventory to attach images.
+inventorySchema.virtual('imageLoc').get(function getImageLoc() {
+  return resolveImageLoc('inventory', this.name);
+});
 
 inventorySchema.index({ name: 'text', category: 'text', sku: 'text' });
 

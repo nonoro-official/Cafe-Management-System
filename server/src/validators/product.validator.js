@@ -5,7 +5,6 @@ export const createProductValidator = [
   body('price').isFloat({ min: 0 }).withMessage('Price must be a non-negative number').toFloat(),
   body('category').isMongoId().withMessage('A valid category id is required'),
   body('description').optional().isString().trim(),
-  body('image').optional().isString().trim(),
   body('tags').optional().isArray().withMessage('tags must be an array'),
   body('tags.*').optional().isString().trim(),
   body('isAvailable')
@@ -24,7 +23,6 @@ export const updateProductValidator = [
     .toFloat(),
   body('category').optional().isMongoId().withMessage('A valid category id is required'),
   body('description').optional().isString().trim(),
-  body('image').optional().isString().trim(),
   body('tags').optional().isArray().withMessage('tags must be an array'),
   body('tags.*').optional().isString().trim(),
   body('isAvailable')

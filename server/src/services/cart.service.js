@@ -77,7 +77,8 @@ class CartService {
   }
 
   async #buildSummary(cart) {
-    await cart.populate('items.product', 'name price image isAvailable category');
+    // `name` must stay selected so the product's `imageLoc` virtual can resolve.
+    await cart.populate('items.product', 'name price isAvailable category');
 
     // Drop items whose product has since been deleted so totals stay correct.
     const validItems = cart.items.filter((item) => item.product);

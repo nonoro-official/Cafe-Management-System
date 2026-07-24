@@ -217,8 +217,8 @@ const DashboardPage = () => {
               topProducts.map((product, index) => (
                 <div className="rank-row" key={product.productId || product.name}>
                   <span className="rank-row__num">{index + 1}</span>
-                  {product.image ? (
-                    <img className="rank-row__thumb" src={product.image} alt={product.name} />
+                  {product.imageLoc ? (
+                    <img className="rank-row__thumb" src={product.imageLoc} alt={product.name} />
                   ) : (
                     <div className="rank-row__thumb" />
                   )}

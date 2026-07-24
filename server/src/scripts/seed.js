@@ -17,6 +17,10 @@ import { Product } from '../models/product.model.js';
 import { Inventory } from '../models/inventory.model.js';
 import { ROLES } from '../utilities/constants.js';
 
+// Note: images are not seeded. Each model exposes an `imageLoc` virtual that is
+// resolved at read time from files under server/public/images/<type>, matched
+// by the item's name (see utilities/imageLocator.js).
+
 const categorySeeds = [
   { name: 'Coffee', description: 'Espresso-based and brewed coffees', sortOrder: 1 },
   { name: 'Pastries', description: 'Freshly baked pastries', sortOrder: 2 },

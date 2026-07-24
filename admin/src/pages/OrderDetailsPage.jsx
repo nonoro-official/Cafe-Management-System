@@ -8,7 +8,7 @@ import { APP_NAME, ORDER_STATUS_STEPS } from '../utilities/constants.js';
 import { formatCurrency } from '../utilities/currency.js';
 import { getOrder, updateOrderStatus, updateOrderNotes } from '../services/orderService.js';
 
-const METHOD_LABEL = { cash: 'Cash', card: 'Card', cashless: 'Cashless (GCash, etc.)' };
+const METHOD_LABEL = { cash: 'Cash', cashless: 'Cashless (GCash, etc.)' };
 const NON_DINE_IN_LABEL = { takeout: 'Take-Away' };
 
 const OrderDetailsPage = () => {

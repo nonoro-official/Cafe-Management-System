@@ -5,7 +5,6 @@ import { updateOrderPayment } from '../../services/orderService.js';
 
 const METHODS = [
   { value: 'cash', label: 'Cash' },
-  { value: 'card', label: 'Card' },
   { value: 'cashless', label: 'Cashless (GCash, etc.)' },
 ];
 

@@ -75,6 +75,8 @@ class InventoryService {
     }
 
     ['name', 'sub', 'category', 'sku', 'stock', 'unitValue'].forEach((field) => {
+      // Note: `imageLoc` is a read-only virtual derived from the item name; it
+      // is intentionally not settable here.
       if (payload[field] !== undefined) {
         item[field] = payload[field];
       }

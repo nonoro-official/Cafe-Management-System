@@ -68,7 +68,7 @@ class ProductService {
       throw ApiError.notFound('Product not found');
     }
 
-    ['name', 'description', 'price', 'category', 'image', 'tags', 'isAvailable'].forEach((field) => {
+    ['name', 'description', 'price', 'category', 'tags', 'isAvailable'].forEach((field) => {
       if (payload[field] !== undefined) {
         product[field] = payload[field];
       }

@@ -74,7 +74,7 @@ const RegisterPage = () => {
           name: product.name,
           price: product.price,
           quantity: 1,
-          image: product.image,
+          imageLoc: product.imageLoc,
         },
       ];
     });
@@ -211,8 +211,8 @@ const RegisterPage = () => {
             <div className="item-grid">
               {products.map((product) => (
                 <div className="item-card" key={product._id}>
-                  {product.image ? (
-                    <img className="item-card__thumb" src={product.image} alt={product.name} />
+                  {product.imageLoc ? (
+                    <img className="item-card__thumb" src={product.imageLoc} alt={product.name} />
                   ) : (
                     <div className="item-card__thumb item-card__thumb--empty">☕</div>
                   )}
@@ -243,8 +243,8 @@ const RegisterPage = () => {
             {cart.length === 0 && <p className="empty-state">Tap "+ Add" to start this order.</p>}
             {cart.map((item) => (
               <div className="cart-row cart-row--with-thumb" key={item.productId}>
-                {item.image ? (
-                  <img className="cart-row__thumb" src={item.image} alt={item.name} />
+                {item.imageLoc ? (
+                  <img className="cart-row__thumb" src={item.imageLoc} alt={item.name} />
                 ) : (
                   <div className="cart-row__thumb cart-row__thumb--empty" />
                 )}

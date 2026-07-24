@@ -5,9 +5,9 @@ const KioskCartItemRow = ({ item, quantity, onAdd, onRemove }) => {
 
   return (
     <article className="kiosk-cart__item">
-      <div className="kiosk-cart__item-media" aria-hidden={!item.image}>
-        {item.image ? (
-          <img className="kiosk-cart__item-image" src={item.image} alt="" />
+      <div className="kiosk-cart__item-media" aria-hidden={!item.imageLoc}>
+        {item.imageLoc ? (
+          <img className="kiosk-cart__item-image" src={item.imageLoc} alt="" />
         ) : (
           <span className="kiosk-cart__item-placeholder" />
         )}

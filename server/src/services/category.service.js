@@ -60,7 +60,7 @@ class CategoryService {
       }
     }
 
-    ['name', 'description', 'image', 'sortOrder', 'isActive'].forEach((field) => {
+    ['name', 'description', 'sortOrder', 'isActive'].forEach((field) => {
       if (payload[field] !== undefined) {
         category[field] = payload[field];
       }

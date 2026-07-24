@@ -4,7 +4,11 @@ import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
-import qrphPlaceholder from '../assets/kiosk/qrph-placeholder.svg';
+
+// Served by the backend from server/public/images (mounted at /api/images), so
+// the QR can be swapped without rebuilding the kiosk app. The space in the
+// filename must be URL-encoded.
+const QR_IMAGE_SRC = '/api/images/Cashless%20Method.jpg';
 
 const KioskCashlessPayment = () => {
   const navigate = useNavigate();
@@ -57,7 +61,7 @@ const KioskCashlessPayment = () => {
         />
 
         <div className="kiosk-cashless__qr-wrap">
-          <img className="kiosk-cashless__qr" src={qrphPlaceholder} alt="QR Ph payment code" />
+          <img className="kiosk-cashless__qr" src={QR_IMAGE_SRC} alt="QR Ph payment code" />
         </div>
 
         <p className="kiosk-cashless__hint">

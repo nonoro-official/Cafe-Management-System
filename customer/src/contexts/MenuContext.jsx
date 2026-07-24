@@ -18,7 +18,7 @@ const mapProduct = (product) => ({
       : product.category,
   name: product.name,
   price: product.price,
-  image: product.image || null,
+  imageLoc: product.imageLoc || null,
 });
 
 /**

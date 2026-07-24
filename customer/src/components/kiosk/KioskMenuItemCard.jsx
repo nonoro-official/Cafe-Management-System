@@ -10,8 +10,8 @@ const KioskMenuItemCard = ({ item, quantity = 0, onAdd, onRemove }) => {
         aria-label={`Add ${item.name} to order`}
       >
         <div className="kiosk-dashboard__item-media">
-          {item.image ? (
-            <img className="kiosk-dashboard__item-image" src={item.image} alt="" />
+          {item.imageLoc ? (
+            <img className="kiosk-dashboard__item-image" src={item.imageLoc} alt="" />
           ) : (
             <span className="kiosk-dashboard__item-placeholder">{item.name}</span>
           )}
