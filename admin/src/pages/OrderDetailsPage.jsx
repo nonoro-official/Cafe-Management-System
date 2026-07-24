@@ -65,13 +65,7 @@ const OrderDetailsPage = () => {
       setOrder(updated);
       setSaveOk(true);
     } catch (err) {
-      // Expected until the backend adds PATCH /orders/:id/notes — see the
-      // TODO in orderService.js.
-      setSaveError(
-        err?.response?.status === 404
-          ? 'Editing an order isn\u2019t connected to a backend endpoint yet — this button is fully built and will work once PATCH /orders/:id/notes exists.'
-          : err?.response?.data?.message || 'Could not save changes.',
-      );
+      setSaveError(err?.response?.data?.message || 'Could not save changes.');
     } finally {
       setBusy(false);
     }

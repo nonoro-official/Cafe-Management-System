@@ -57,3 +57,8 @@ export const updateOrderPayment = asyncHandler(async (req, res) => {
   const order = await orderService.updatePaymentStatus(req.params.id, req.body.paymentStatus);
   sendSuccess(res, { message: 'Payment status updated', data: { order } });
 });
+
+export const updateOrderNotes = asyncHandler(async (req, res) => {
+  const order = await orderService.updateNotes(req.params.id, req.body.notes);
+  sendSuccess(res, { message: 'Order updated', data: { order } });
+});

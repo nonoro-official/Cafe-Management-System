@@ -66,6 +66,17 @@ export const createRegisterOrderValidator = [
     .toInt(),
 ];
 
+export const updateOrderNotesValidator = [
+  body('notes')
+    .exists({ checkNull: true })
+    .withMessage('notes is required')
+    .bail()
+    .isString()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('Notes cannot exceed 500 characters'),
+];
+
 export const updateOrderStatusValidator = [
   body('status').isIn(ORDER_STATUS_VALUES).withMessage('Invalid order status'),
 ];

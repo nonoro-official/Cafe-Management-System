@@ -22,19 +22,13 @@ export const updateOrderPayment = async (id, paymentStatus) => {
   return data.data.order;
 };
 
-// --- TODO(backend): no endpoint exists for staff to create an order. ---
-// POST /orders is locked to authorize(ROLES.CUSTOMER) only. Placeholder
-// aimed at a route that doesn't exist yet so the Register page fails
-// gracefully (404) instead of guessing at a real endpoint shape.
+// Staff-placed (point-of-sale) order from the Register screen.
 export const createRegisterOrder = async (payload) => {
   const { data } = await api.post('/orders/register', payload);
   return data.data.order;
 };
 
-// --- TODO(backend): no endpoint exists to edit an order after creation ---
-// beyond status/payment. This is aimed at a route that doesn't exist yet
-// (`PATCH /orders/:id/notes`) so "Save Changes" on Order Details fails
-// gracefully instead of pretending to work.
+// Edits an order's special instructions (admin-only).
 export const updateOrderNotes = async (id, notes) => {
   const { data } = await api.patch(`/orders/${id}/notes`, { notes });
   return data.data.order;

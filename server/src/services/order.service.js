@@ -187,6 +187,23 @@ class OrderService {
   }
 
   /**
+   * Edits an order's special instructions. Cancelled orders are frozen, matching
+   * the admin UI which disables the notes field for them.
+   */
+  async updateNotes(id, notes) {
+    const order = await Order.findById(id);
+    if (!order) {
+      throw ApiError.notFound('Order not found');
+    }
+    if (order.status === ORDER_STATUS.CANCELLED) {
+      throw ApiError.badRequest('Cannot edit a cancelled order');
+    }
+    order.notes = (notes || '').trim();
+    await order.save();
+    return order;
+  }
+
+  /**
    * Customer-initiated cancellation, only permitted while the order is still
    * pending (before the kitchen starts preparing it).
    */

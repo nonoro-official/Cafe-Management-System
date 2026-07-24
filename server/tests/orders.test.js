@@ -147,3 +147,62 @@ describe('admin register orders & status transitions', () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe('edit order notes', () => {
+  const placeKioskOrder = async () => {
+    await ensureKioskUser();
+    const { product } = await seedProduct();
+    const created = await api()
+      .post('/api/orders/kiosk')
+      .send({ items: [{ productId: product.id, quantity: 1 }], paymentMethod: 'cash' });
+    return created.body.data.order._id;
+  };
+
+  it("lets an admin edit an order's notes", async () => {
+    const id = await placeKioskOrder();
+    const token = await createAdminAndLogin();
+
+    const res = await api()
+      .patch(`/api/orders/${id}/notes`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ notes: 'Extra hot, no sugar' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.order.notes).toBe('Extra hot, no sugar');
+  });
+
+  it('rejects notes longer than 500 characters', async () => {
+    const id = await placeKioskOrder();
+    const token = await createAdminAndLogin();
+
+    const res = await api()
+      .patch(`/api/orders/${id}/notes`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ notes: 'x'.repeat(501) });
+
+    expect(res.status).toBe(422);
+  });
+
+  it('forbids a non-admin from editing notes', async () => {
+    const id = await placeKioskOrder();
+    const { token } = await registerCustomer();
+
+    const res = await api()
+      .patch(`/api/orders/${id}/notes`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ notes: 'hello' });
+
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 404 for a non-existent order', async () => {
+    const token = await createAdminAndLogin();
+
+    const res = await api()
+      .patch('/api/orders/507f1f77bcf86cd799439011/notes')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ notes: 'hello' });
+
+    expect(res.status).toBe(404);
+  });
+});

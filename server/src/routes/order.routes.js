@@ -11,6 +11,7 @@ import {
   createKioskOrderValidator,
   createRegisterOrderValidator,
   listOrdersValidator,
+  updateOrderNotesValidator,
   updateOrderStatusValidator,
   updatePaymentStatusValidator,
 } from '../validators/order.validator.js';
@@ -79,6 +80,12 @@ router.patch(
   authorize(ROLES.ADMIN),
   validate([mongoIdParam('id'), ...updatePaymentStatusValidator]),
   orderController.updateOrderPayment,
+);
+router.patch(
+  '/:id/notes',
+  authorize(ROLES.ADMIN),
+  validate([mongoIdParam('id'), ...updateOrderNotesValidator]),
+  orderController.updateOrderNotes,
 );
 
 export default router;
