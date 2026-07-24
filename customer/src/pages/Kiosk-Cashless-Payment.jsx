@@ -47,6 +47,10 @@ const KioskCashlessPayment = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/kiosk/checkout');
+  };
+
   if (cartCount === 0 || paymentMethod !== 'cashless') {
     return null;
   }
@@ -78,6 +82,15 @@ const KioskCashlessPayment = () => {
         </button>
 
         {submitError && <p className="kiosk-cashless__error">{submitError}</p>}
+
+        <button
+          type="button"
+          className="kiosk-btn-secondary kiosk-cashless__back"
+          onClick={handleBack}
+          disabled={submitting}
+        >
+          Back
+        </button>
       </div>
     </div>
   );

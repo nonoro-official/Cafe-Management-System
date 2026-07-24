@@ -39,6 +39,10 @@ const KioskCheckout = () => {
     navigate(option.route);
   };
 
+  const handleBack = () => {
+    navigate('/kiosk/cart');
+  };
+
   if (cartCount === 0) {
     return null;
   }
@@ -70,6 +74,10 @@ const KioskCheckout = () => {
             </button>
           ))}
         </div>
+
+        <button type="button" className="kiosk-btn-secondary kiosk-checkout__back" onClick={handleBack}>
+          Back
+        </button>
       </div>
     </div>
   );

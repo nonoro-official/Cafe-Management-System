@@ -1229,6 +1229,11 @@ body {
   outline-offset: 2px;
 }
 
+.kiosk-checkout__back {
+  width: 100%;
+  margin-top: 1rem;
+}
+
 .kiosk-cashless__qr-wrap {
   display: flex;
   justify-content: center;
@@ -1256,6 +1261,11 @@ body {
 
 .kiosk-cashless__confirm {
   width: 100%;
+}
+
+.kiosk-cashless__back {
+  width: 100%;
+  margin-top: 0.85rem;
 }
 
 .kiosk-confirmation {
@@ -1333,6 +1343,11 @@ body {
 
 .kiosk-confirmation__action {
   width: 100%;
+}
+
+.kiosk-confirmation__back {
+  width: 100%;
+  margin-top: 0.75rem;
 }
 
 .kiosk-dashboard__status,

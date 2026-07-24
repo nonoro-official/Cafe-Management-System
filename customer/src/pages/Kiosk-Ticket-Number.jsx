@@ -5,6 +5,10 @@ import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
 
+// Auto-return to the kiosk landing after the ticket has been shown for a while,
+// so the station is ready for the next customer. No visible countdown.
+const AUTO_RESET_MS = 20000;
+
 const KioskTicketNumber = () => {
   const navigate = useNavigate();
   const { cartCount, paymentMethod, ticketNumber, submitOrder, submitting, submitError, resetOrder } =
@@ -15,7 +19,7 @@ const KioskTicketNumber = () => {
 
   useEffect(() => {
     if (cartCount === 0) {
-      navigate('/kiosk/dashboard', { replace: true });
+      navigate('/kiosk', { replace: true });
       return;
     }
 
@@ -34,9 +38,26 @@ const KioskTicketNumber = () => {
     }
   }, [cartCount, paymentMethod, ticketNumber, submitOrder, navigate]);
 
+  useEffect(() => {
+    if (!ticketNumber) {
+      return undefined;
+    }
+
+    const timerId = setTimeout(() => {
+      resetOrder();
+      navigate('/kiosk', { replace: true });
+    }, AUTO_RESET_MS);
+
+    return () => clearTimeout(timerId);
+  }, [ticketNumber, resetOrder, navigate]);
+
   const handleNewOrder = () => {
     resetOrder();
-    navigate('/kiosk/start');
+    navigate('/kiosk');
+  };
+
+  const handleBack = () => {
+    navigate('/kiosk/checkout');
   };
 
   if (cartCount === 0 || paymentMethod !== 'cash') {
@@ -86,6 +107,9 @@ const KioskTicketNumber = () => {
         </p>
         <button type="button" className="kiosk-btn-primary kiosk-confirmation__action" onClick={handleNewOrder}>
           Start new order
+        </button>
+        <button type="button" className="kiosk-btn-secondary kiosk-confirmation__back" onClick={handleBack}>
+          Back
         </button>
       </div>
     </div>
