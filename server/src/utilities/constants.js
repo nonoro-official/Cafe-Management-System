@@ -40,7 +40,6 @@ export const ORDER_STATUS_TRANSITIONS = Object.freeze({
 
 export const PAYMENT_METHODS = Object.freeze({
   CASH: 'cash',
-  CARD: 'card',
   CASHLESS: 'cashless',
 });
 

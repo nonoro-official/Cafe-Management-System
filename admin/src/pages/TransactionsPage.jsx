@@ -28,7 +28,7 @@ const TransactionsPage = () => {
   }, []);
 
   const totalsByMethod = useMemo(() => {
-    const totals = { cash: 0, card: 0, cashless: 0 };
+    const totals = { cash: 0, cashless: 0 };
     orders.forEach((o) => {
       if (o.paymentStatus === 'paid' && totals[o.paymentMethod] !== undefined) {
         totals[o.paymentMethod] += o.total;
@@ -49,10 +49,6 @@ const TransactionsPage = () => {
           <div className="kpi-card">
             <div className="kpi-card__label">Cash</div>
             <div className="kpi-card__value">{formatCurrency(totalsByMethod.cash)}</div>
-          </div>
-          <div className="kpi-card">
-            <div className="kpi-card__label">Card</div>
-            <div className="kpi-card__value">{formatCurrency(totalsByMethod.card)}</div>
           </div>
           <div className="kpi-card">
             <div className="kpi-card__label">Cashless</div>
