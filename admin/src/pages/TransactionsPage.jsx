@@ -68,7 +68,7 @@ const TransactionsPage = () => {
           <p className="empty-state">No transactions recorded yet.</p>
         ) : (
           <div className="table-wrap">
-            <table>
+            <table className="data-table">
               <thead>
                 <tr>
                   <th>Transaction ID</th>

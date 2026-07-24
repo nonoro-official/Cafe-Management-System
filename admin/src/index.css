@@ -1438,6 +1438,38 @@ body {
   gap: 1.2rem;
   align-items: start;
 }
+
+/* Order Details reuses the register panels but arranges them in a 2-column
+   grid, so neutralize the register page's fixed-sidebar positioning (the
+   480px margin/fixed panel) that would otherwise collapse and clip this
+   layout. */
+.order-details-layout .register-order-panel {
+  margin-right: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.order-details-layout .register-cart-panel {
+  position: static;
+  width: auto;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  overflow: visible;
+  z-index: auto;
+}
+
+/* The shared data-table forces a 720px min-width for wide pages; the order's
+   4-column table should instead fit its narrower grid column. */
+.order-details-layout .data-table {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .order-details-layout {
+    grid-template-columns: 1fr;
+  }
+}
 .status-stepper {
   display: flex;
   flex-direction: column;

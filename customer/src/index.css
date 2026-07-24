@@ -1294,6 +1294,7 @@ body {
 .kiosk-confirmation__number-box {
   width: min(65vw, 14rem);
   aspect-ratio: 1;
+  padding: 1rem;
   border-radius: 1.25rem;
   background: linear-gradient(165deg, #fff 0%, #f0e6d8 100%);
   border: 2px solid rgba(201, 169, 98, 0.45);
@@ -1314,9 +1315,13 @@ body {
 
 .kiosk-confirmation__hash {
   font-family: Fraunces, Georgia, serif;
-  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
   font-weight: 800;
   color: #7a5640;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .kiosk-confirmation__message {
