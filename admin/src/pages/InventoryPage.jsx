@@ -5,7 +5,7 @@ import Modal from '../components/admin/Modal.jsx';
 import StatusBadge from '../components/admin/StatusBadge.jsx';
 import KpiCard from '../components/admin/KpiCard.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
-import { APP_NAME } from '../utilities/constants.js';
+import { APP_NAME, stockTone, stockLabel } from '../utilities/constants.js';
 import { formatCurrency } from '../utilities/currency.js';
 import { inventoryService } from '../services/inventoryService.js';
 
@@ -14,10 +14,6 @@ const SORT_OPTIONS = [
   { value: 'stock:asc', label: 'Stock (Low–High)' },
   { value: 'stock:desc', label: 'Stock (High–Low)' },
 ];
-
-const stockTone = (stock) => (stock <= 15 ? 'danger' : stock <= 35 ? 'warn' : 'good');
-const stockLabel = (stock) =>
-  stock <= 15 ? 'Out of Stock' : stock <= 35 ? 'Low Stock' : 'In Stock';
 
 const emptyForm = { name: '', sub: '', category: '', sku: '', stock: '' };
 
@@ -77,7 +73,8 @@ const InventoryPage = () => {
 
   const totalProducts = summary?.totalProducts ?? items.length;
   const totalAssetValue =
-    summary?.totalAssetValue ?? items.reduce((sum, item) => sum + item.stock * 45, 0);
+    summary?.totalAssetValue ??
+    items.reduce((sum, item) => sum + item.stock * (item.unitValue ?? 0), 0);
 
   const openAddModal = () => {
     setEditingId(null);

@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import KioskPageHeader from '../components/kiosk/KioskPageHeader.jsx';
 import { useKioskOrder } from '../contexts/KioskOrderContext.jsx';
-import { kioskCashlessPaymentMethods } from '../data/kioskPaymentMethods.js';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 import { APP_NAME } from '../utilities/constants.js';
+import qrphPlaceholder from '../assets/kiosk/qrph-placeholder.svg';
 
 const KioskCashlessPayment = () => {
   const navigate = useNavigate();
@@ -24,12 +24,16 @@ const KioskCashlessPayment = () => {
     }
   }, [cartCount, paymentMethod, navigate]);
 
-  const handleSelectMethod = async (method) => {
+  // QR Ph is the only cashless rail for now. Record it so the order-number
+  // page's guard passes once the order is placed.
+  useEffect(() => {
+    setCashlessProvider('qrph');
+  }, [setCashlessProvider]);
+
+  const handleConfirm = async () => {
     if (submitting) {
       return;
     }
-
-    setCashlessProvider(method.id);
 
     try {
       await submitOrder('cashless');
@@ -48,31 +52,27 @@ const KioskCashlessPayment = () => {
       <div className="kiosk-cashless__panel">
         <KioskPageHeader
           eyebrow="Cashless"
-          title="Choose your payment"
-          subtitle="Tap your preferred e-wallet or card"
+          title="Scan to pay with QR Ph"
+          subtitle="Use any QR Ph-enabled bank or e-wallet app"
         />
 
-        <div className="kiosk-cashless__grid" role="group" aria-label="Cashless payment methods">
-          {kioskCashlessPaymentMethods.map((method) => (
-            <button
-              key={method.id}
-              type="button"
-              className="kiosk-cashless__method"
-              onClick={() => handleSelectMethod(method)}
-              disabled={submitting}
-              aria-label={`Pay with ${method.label}`}
-            >
-              {method.image ? (
-                <img className="kiosk-cashless__method-image" src={method.image} alt="" />
-              ) : (
-                <span className="kiosk-cashless__method-placeholder" aria-hidden="true" />
-              )}
-              <span className="kiosk-cashless__method-label">{method.label}</span>
-            </button>
-          ))}
+        <div className="kiosk-cashless__qr-wrap">
+          <img className="kiosk-cashless__qr" src={qrphPlaceholder} alt="QR Ph payment code" />
         </div>
 
-        {submitting && <p className="kiosk-cashless__status">Placing your order…</p>}
+        <p className="kiosk-cashless__hint">
+          After paying in your app, tap below to get your order number.
+        </p>
+
+        <button
+          type="button"
+          className="kiosk-btn-primary kiosk-cashless__confirm"
+          onClick={handleConfirm}
+          disabled={submitting}
+        >
+          {submitting ? 'Placing your order…' : "I've paid — get my order number"}
+        </button>
+
         {submitError && <p className="kiosk-cashless__error">{submitError}</p>}
       </div>
     </div>

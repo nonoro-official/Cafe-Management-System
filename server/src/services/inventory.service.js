@@ -3,8 +3,8 @@ import { ApiError } from '../utilities/apiError.js';
 import { parsePagination, buildPaginationMeta } from '../utilities/pagination.js';
 
 // Thresholds mirror the admin UI's stock gauge tones.
-const OUT_OF_STOCK_AT = 15;
-const LOW_STOCK_AT = 35;
+export const OUT_OF_STOCK_AT = 15;
+export const LOW_STOCK_AT = 35;
 
 class InventoryService {
   async list(query = {}) {
@@ -14,6 +14,11 @@ class InventoryService {
     if (query.search) {
       const regex = new RegExp(query.search.trim(), 'i');
       filter.$or = [{ name: regex }, { category: regex }, { sku: regex }];
+    }
+
+    // Low-stock view (e.g. the dashboard panel) keeps the threshold server-side.
+    if (String(query.lowStock) === 'true') {
+      filter.stock = { $lte: LOW_STOCK_AT };
     }
 
     // The admin toolbar sends a combined "field:direction" sort value.

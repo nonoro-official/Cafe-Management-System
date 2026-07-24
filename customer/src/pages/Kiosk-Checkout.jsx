@@ -9,7 +9,7 @@ const PAYMENT_OPTIONS = [
   {
     id: 'cashless',
     label: 'Pay cashless',
-    hint: 'Card, e-wallet, or QR',
+    hint: 'Scan QR Ph to pay',
     icon: '💳',
     route: '/kiosk/cashless-payment',
   },

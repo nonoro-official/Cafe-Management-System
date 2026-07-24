@@ -1229,58 +1229,33 @@ body {
   outline-offset: 2px;
 }
 
-.kiosk-cashless__grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.kiosk-cashless__method {
+.kiosk-cashless__qr-wrap {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.65rem 0.45rem 0.55rem;
-  border: 1px solid rgba(44, 24, 16, 0.08);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  justify-content: center;
+  margin: 0.5rem 0 1.25rem;
 }
 
-.kiosk-cashless__method:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(44, 24, 16, 0.08);
-}
-
-.kiosk-cashless__method:active {
-  transform: scale(0.98);
-}
-
-.kiosk-cashless__method-image,
-.kiosk-cashless__method-placeholder {
-  width: 100%;
+.kiosk-cashless__qr {
+  width: min(70vw, 15rem);
   aspect-ratio: 1;
-  border-radius: 0.65rem;
   object-fit: contain;
+  padding: 0.9rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  border: 2px solid var(--kiosk-gold);
+  box-shadow: 0 10px 26px rgba(44, 24, 16, 0.12);
 }
 
-.kiosk-cashless__method-placeholder {
-  display: block;
-  background: #ebe3d6;
-}
-
-.kiosk-cashless__method-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #6b4e38;
+.kiosk-cashless__hint {
+  margin: 0 auto 1.25rem;
+  max-width: 22rem;
   text-align: center;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  color: #6b4e38;
 }
 
-.kiosk-cashless__method:focus-visible {
-  outline: 3px solid var(--kiosk-gold);
-  outline-offset: 2px;
+.kiosk-cashless__confirm {
+  width: 100%;
 }
 
 .kiosk-confirmation {

@@ -3,14 +3,16 @@ import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
 import PageHeader from '../components/admin/PageHeader.jsx';
 import KpiCard from '../components/admin/KpiCard.jsx';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
-import { APP_NAME } from '../utilities/constants.js';
+import { APP_NAME, stockTone, stockLabel } from '../utilities/constants.js';
 import { formatCurrency } from '../utilities/currency.js';
+import StatusBadge from '../components/admin/StatusBadge.jsx';
 import {
   getSalesReport,
   getDashboardOverview,
   getTopProducts,
   getSalesTrend,
 } from '../services/reportService.js';
+import { inventoryService } from '../services/inventoryService.js';
 
 const dayRange = (offsetDays) => {
   const start = new Date();
@@ -41,6 +43,8 @@ const DashboardPage = () => {
   const [overview, setOverview] = useState(null);
   const [topProducts, setTopProducts] = useState([]);
   const [trend, setTrend] = useState([]);
+  const [lowStockItems, setLowStockItems] = useState([]);
+  const [lowStockCount, setLowStockCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,19 +53,24 @@ const DashboardPage = () => {
       setLoading(true);
       setError('');
       try {
-        const [todaySales, yesterdaySales, overviewData, top, salesTrend] = await Promise.all([
-          getSalesReport(dayRange(0)),
-          getSalesReport(dayRange(1)),
-          getDashboardOverview(),
-          getTopProducts({ limit: 5 }),
-          getSalesTrend({}),
-        ]);
+        const [todaySales, yesterdaySales, overviewData, top, salesTrend, lowStock, invSummary] =
+          await Promise.all([
+            getSalesReport(dayRange(0)),
+            getSalesReport(dayRange(1)),
+            getDashboardOverview(),
+            getTopProducts({ limit: 5 }),
+            getSalesTrend({}),
+            inventoryService.list({ lowStock: true, sort: 'stock:asc', limit: 5 }),
+            inventoryService.summary(),
+          ]);
         if (cancelled) return;
         setToday(todaySales);
         setYesterday(yesterdaySales);
         setOverview(overviewData);
         setTopProducts(top);
         setTrend(salesTrend.slice(-7));
+        setLowStockItems(lowStock.data ?? []);
+        setLowStockCount(invSummary.data?.lowStock ?? 0);
       } catch (err) {
         if (!cancelled) setError(err?.response?.data?.message || 'Could not load dashboard data.');
       } finally {
@@ -177,11 +186,23 @@ const DashboardPage = () => {
           <div className="panel">
             <div className="panel__head">
               <h3>Low Stock Items</h3>
+              {lowStockCount > 0 && (
+                <StatusBadge tone="warn">{lowStockCount} need restocking</StatusBadge>
+              )}
             </div>
-            <p className="empty-state">
-              Stock tracking isn't in the Product schema yet — this panel will populate once
-              inventory fields (stock, SKU, reorder threshold) are added on the backend.
-            </p>
+            {lowStockItems.length === 0 ? (
+              <p className="empty-state">All items are well stocked.</p>
+            ) : (
+              <div className="dashboard-sidebar__list">
+                {lowStockItems.map((item) => (
+                  <div className="rank-row" key={item.id || item.sku}>
+                    <span className="rank-row__name">{item.name}</span>
+                    <span className="rank-row__meta">{item.stock}%</span>
+                    <StatusBadge tone={stockTone(item.stock)}>{stockLabel(item.stock)}</StatusBadge>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
