@@ -1,7 +1,5 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import KioskLayout from '../layouts/KioskLayout.jsx';
-import MainLayout from '../layouts/MainLayout.jsx';
-import HomePage from '../pages/HomePage.jsx';
 import KioskCashlessPayment from '../pages/Kiosk-Cashless-Payment.jsx';
 import KioskCart from '../pages/Kiosk-Cart.jsx';
 import KioskCheckout from '../pages/Kiosk-Checkout.jsx';
@@ -14,13 +12,7 @@ import KioskTicketNumber from '../pages/Kiosk-Ticket-Number.jsx';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
-    ],
+    element: <Navigate to="/kiosk" replace />,
   },
   {
     path: '/kiosk',
